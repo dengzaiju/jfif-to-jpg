@@ -1,0 +1,32 @@
+{
+  "environment": "development",
+  "api": {
+    "baseUrl": "http://localhost:8787",
+    "timeout": 30000,
+    "retryAttempts": 3
+  },
+  "features": {
+    "debug": true,
+    "logging": "debug",
+    "analytics": false
+  },
+  "upload": {
+    "maxFileSize": 10485760,
+    "maxTotalSize": 104857600,
+    "allowedTypes": ["image/jpeg", "image/jfif", "image/png", "image/bmp", "image/gif", "image/webp"]
+  },
+  "conversion": {
+    "defaultQuality": 90,
+    "defaultFormat": "jpg",
+    "maxConcurrent": 5
+  },
+  "storage": {
+    "type": "local",
+    "cleanupInterval": 3600000
+  },
+  "ui": {
+    "theme": "light",
+    "language": "zh-CN",
+    "showTutorial": true
+  }
+} 
