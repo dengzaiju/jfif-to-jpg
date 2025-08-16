@@ -171,6 +171,7 @@ npm install sharp
 **操作**：初始化wrangler配置
 
 **执行命令**：
+
 ```bash
 npx wrangler init
 ```
@@ -207,13 +208,25 @@ echo # Production Environment Variables > .env.production
 ## 存储服务配置
 
 ### 第十六步：R2存储配置
-**作用**：配置Cloudflare R2对象存储
-**操作**：在Cloudflare控制台创建R2存储桶
+**作用**：配置Cloudflare R2对象存储  
+**操作**：在Cloudflare控制台手动创建R2存储桶并获取访问密钥
 
-**执行命令**：
-```bash
-# 这一步需要在Cloudflare控制台手动操作
-# 创建R2存储桶并获取访问密钥
+**详细操作步骤**：
+
+1. 打开浏览器，访问 [Cloudflare Dashboard](https://dash.cloudflare.com/) 并登录你的账号。
+2. 在左侧菜单中点击“R2”进入对象存储管理页面。
+3. 点击页面右上角的“创建存储桶”按钮。
+4. 在弹出的窗口中输入存储桶名称（如：`jfif-converter-images-dev` 或 `jfif-converter-images-prod`），然后点击“创建存储桶”。
+5. 存储桶创建完成后，点击“管理API令牌”或“访问密钥”标签页。
+6. 点击“创建访问密钥”，输入描述信息（可选），然后确认生成。
+7. 记录下生成的 `Access Key ID` 和 `Secret Access Key`，**请妥善保存，页面关闭后无法再次查看 Secret Access Key**。
+8. 记下你的 `Account ID`，可在R2页面顶部或存储桶详情页找到。
+
+**预期结果**：R2存储桶创建完成，并获得如下信息：
+- 存储桶名称（Bucket Name）
+- 账号ID（Account ID）
+- 访问密钥ID（Access Key ID）
+- 访问密钥（Secret Access Key）
 ```
 
 **预期结果**：R2存储桶创建完成，获得访问密钥
