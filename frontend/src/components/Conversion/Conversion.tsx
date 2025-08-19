@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { ArrowPathIcon, DocumentArrowDownIcon } from '@heroicons/react/24/outline';
+import React, { useState, useEffect } from 'react';
 
 interface ConversionSettings {
   quality: number;
@@ -16,6 +15,7 @@ interface ConversionProps {
   isConverting: boolean;
   convertedCount: number;
   totalCount: number;
+  presetFormat?: 'jpg' | 'png' | 'webp' | 'bmp' | 'gif';
 }
 
 export const Conversion: React.FC<ConversionProps> = ({
@@ -23,7 +23,8 @@ export const Conversion: React.FC<ConversionProps> = ({
   onBatchConvert,
   isConverting,
   convertedCount,
-  totalCount
+  totalCount,
+  presetFormat
 }) => {
   const [settings, setSettings] = useState<ConversionSettings>({
     quality: 90,
@@ -31,6 +32,12 @@ export const Conversion: React.FC<ConversionProps> = ({
     resize: 'original',
     maintainAspectRatio: true
   });
+
+  useEffect(() => {
+    if (presetFormat && presetFormat !== settings.format) {
+      setSettings(prev => ({ ...prev, format: presetFormat }));
+    }
+  }, [presetFormat]);
 
   const handleSettingChange = (key: keyof ConversionSettings, value: any) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -47,7 +54,7 @@ export const Conversion: React.FC<ConversionProps> = ({
   const progress = totalCount > 0 ? (convertedCount / totalCount) * 100 : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-['Comic Sans MS', 'Brush Script MT', cursive]">
       {/* 转换设置 */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">转换设置</h3>
@@ -59,6 +66,7 @@ export const Conversion: React.FC<ConversionProps> = ({
               输出格式
             </label>
             <select
+              id="output-format-select"
               value={settings.format}
               onChange={(e) => handleSettingChange('format', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -155,19 +163,17 @@ export const Conversion: React.FC<ConversionProps> = ({
           <button
             onClick={handleConvert}
             disabled={isConverting}
-            className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="flex-1 border border-blue-300 bg-white text-gray-800 hover:text-blue-600 px-6 py-3 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-70 disabled:bg-white disabled:text-blue-400 disabled:border-blue-200 flex items-center justify-center font-semibold text-base"
           >
-            <ArrowPathIcon className="w-5 h-5 mr-2" />
-            转换为 {settings.format.toUpperCase()}
+            🔄 转换为 {settings.format.toUpperCase()}
           </button>
           
           <button
             onClick={handleBatchConvert}
             disabled={isConverting}
-            className="flex-1 bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="flex-1 border border-green-300 bg-white text-gray-800 hover:text-green-700 px-6 py-3 rounded-md hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-70 disabled:bg-white disabled:text-green-400 disabled:border-green-200 flex items-center justify-center font-semibold text-base"
           >
-            <DocumentArrowDownIcon className="w-5 h-5 mr-2" />
-            批量转换
+            📥 批量转换
           </button>
         </div>
 

@@ -17,9 +17,13 @@ interface ImageFile {
 interface AdvancedSettings {
   autoRotate: boolean;
   clearMetadata: boolean;
-  theme: 'light' | 'dark' | 'auto';
+  theme: 'light' | 'dark';
+  imageQuality: 'low' | 'medium' | 'high';
+  imageSize: 'original' | 'custom' | '30%' | '50%' | '70%';
   compressionLevel: 'none' | 'low' | 'medium' | 'high';
   outputFormat: 'jpg' | 'png' | 'webp' | 'bmp' | 'gif';
+  customWidth?: number;
+  customHeight?: number;
 }
 
 export const Converter: React.FC = () => {
@@ -30,6 +34,8 @@ export const Converter: React.FC = () => {
     autoRotate: true,
     clearMetadata: true,
     theme: 'light',
+    imageQuality: 'medium',
+    imageSize: 'original',
     compressionLevel: 'medium',
     outputFormat: 'jpg'
   });
@@ -82,6 +88,8 @@ export const Converter: React.FC = () => {
       autoRotate: true,
       clearMetadata: true,
       theme: 'light',
+      imageQuality: 'medium',
+      imageSize: 'original',
       compressionLevel: 'medium',
       outputFormat: 'jpg'
     });
