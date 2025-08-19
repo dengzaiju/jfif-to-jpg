@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import { CloudArrowUpIcon } from '@heroicons/react/24/outline';
 
 interface FileUploadProps {
   onFileSelect: (files: File[]) => void;
@@ -76,7 +75,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   }, [handleFileSelect]);
 
   return (
-    <div className="w-full">
+    <div className="w-full font-['Comic Sans MS', 'Brush Script MT', cursive]">
       <div
         className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
           isDragOver
@@ -87,7 +86,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <CloudArrowUpIcon className="mx-auto h-12 w-12 text-gray-400" />
+        <div className="mx-auto h-12 w-12 text-gray-400 text-4xl mb-2">☁️</div>
         <div className="mt-4">
           <p className="text-lg font-medium text-gray-900">
             拖拽文件到这里
