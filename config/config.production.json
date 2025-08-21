@@ -1,0 +1,42 @@
+{
+  "environment": "production",
+  "api": {
+    "baseUrl": "https://api.jfif-to-jpg.com",
+    "timeout": 15000,
+    "retryAttempts": 2
+  },
+  "features": {
+    "debug": false,
+    "logging": "error",
+    "analytics": true
+  },
+  "upload": {
+    "maxFileSize": 10485760,
+    "maxTotalSize": 104857600,
+    "allowedTypes": ["image/jpeg", "image/jfif", "image/png", "image/bmp", "image/gif", "image/webp"]
+  },
+  "conversion": {
+    "defaultQuality": 90,
+    "defaultFormat": "jpg",
+    "maxConcurrent": 10
+  },
+  "storage": {
+    "type": "cloudflare-r2",
+    "cleanupInterval": 86400000
+  },
+  "ui": {
+    "theme": "auto",
+    "language": "en-US",
+    "showTutorial": false
+  },
+  "performance": {
+    "enableCaching": true,
+    "enableCompression": true,
+    "cdnEnabled": true
+  },
+  "security": {
+    "enableCSP": true,
+    "enableHSTS": true,
+    "enableXSSProtection": true
+  }
+} 
