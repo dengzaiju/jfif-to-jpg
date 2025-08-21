@@ -1,0 +1,32 @@
+name = "jfif-to-jpg-converter"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# 开发环境配置
+[env.development]
+name = "jfif-to-jpg-converter-dev"
+vars = { ENVIRONMENT = "development" }
+
+# 生产环境配置  
+[env.production]
+name = "jfif-to-jpg-converter-prod"
+vars = { ENVIRONMENT = "production" }
+
+# R2 存储桶配置
+[[r2_buckets]]
+binding = "IMAGES_BUCKET"
+bucket_name = "jfif-converter-images-dev"
+preview_bucket_name = "jfif-converter-images-dev"
+
+[env.production.r2_buckets]
+binding = "IMAGES_BUCKET"
+bucket_name = "jfif-converter-images-prod"
+
+# 构建配置
+[build]
+command = "npm run build"
+
+# 开发服务器配置
+[dev]
+port = 8787
