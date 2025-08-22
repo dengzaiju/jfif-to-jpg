@@ -10,7 +10,7 @@ vars = { ENVIRONMENT = "development" }
 
 # 生产环境配置  
 [env.production]
-name = "jfif-to-jpg-converter-prod"
+name = "jfif-to-jpg-prod"
 vars = { ENVIRONMENT = "production" }
 
 # R2 存储桶配置
@@ -29,4 +29,5 @@ command = "npm run build"
 
 # 开发服务器配置
 [dev]
+
 port = 8787
