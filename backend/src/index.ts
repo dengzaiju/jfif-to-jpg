@@ -16,7 +16,7 @@ app.use('*', logger());
 // 自定义CORS中间件，确保OPTIONS请求正确处理
 app.use('*', async (c, next) => {
   const origin = c.req.header('Origin');
-  const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000'];
+  const allowedOrigins = ['https://jfiftojpg.site ', ' https://www.jfiftojpg.site'];
   
   if (origin && allowedOrigins.includes(origin)) {
     c.header('Access-Control-Allow-Origin', origin);
@@ -299,5 +299,6 @@ app.onError((err, c) => {
 app.notFound((c) => {
   return c.json({ error: 'Not Found' }, 404);
 });
+
 
 export default app; 
