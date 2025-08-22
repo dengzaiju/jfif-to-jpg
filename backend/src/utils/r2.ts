@@ -1,4 +1,4 @@
-import { R2Bucket } from '@cloudflare/workers-types';
+import { R2Bucket, R2Object } from '@cloudflare/workers-types';
 
 export interface R2File {
   key: string;
@@ -86,4 +86,5 @@ export class R2Service {
       httpMetadata: obj.httpMetadata,
     }));
   }
+
 } 
