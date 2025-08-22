@@ -4,7 +4,7 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "wrangler dev",
-    "build": "npx tsc",
+   "build": "node_modules/.bin/tsc",
     "start": "wrangler dev",
     "deploy": "wrangler deploy",
     "test": "echo \"Error: no test specified\" && exit 1"
