@@ -28,6 +28,32 @@
     <!-- PWA Colors -->
     <meta name="theme-color" content="#1d4ed8" />
 
+    <!-- Google Analytics - 异步加载，不影响页面性能 -->
+    <!-- 注意：GA脚本将在运行时根据环境变量决定是否加载 -->
+    <script>
+      // 环境检测和GA脚本动态加载
+      (function() {
+        // 检查是否为生产环境
+        const isProd = window.location.hostname !== 'localhost' && 
+                      window.location.hostname !== '127.0.0.1' &&
+                      !window.location.hostname.includes('dev');
+        
+        if (isProd) {
+          // 生产环境：加载GA脚本
+          const gaScript = document.createElement('script');
+          gaScript.async = true;
+          gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-SPSFBHX4VH';
+          document.head.appendChild(gaScript);
+          
+          // 初始化GA
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-SPSFBHX4VH');
+        }
+      })();
+    </script>
+
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
     {

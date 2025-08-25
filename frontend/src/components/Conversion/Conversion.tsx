@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAnalytics } from '../../hooks/useAnalytics';
 
 interface ConversionSettings {
   quality: number;
@@ -32,6 +33,7 @@ export const Conversion: React.FC<ConversionProps> = ({
     resize: 'original',
     maintainAspectRatio: true
   });
+  const { trackConversion } = useAnalytics();
 
   useEffect(() => {
     if (presetFormat && presetFormat !== settings.format) {
@@ -44,10 +46,14 @@ export const Conversion: React.FC<ConversionProps> = ({
   };
 
   const handleConvert = () => {
+    // 跟踪转换事件
+    trackConversion(settings.format, settings.quality);
     onConvert(settings);
   };
 
   const handleBatchConvert = () => {
+    // 跟踪批量转换事件
+    trackConversion(settings.format, settings.quality);
     onBatchConvert(settings);
   };
 

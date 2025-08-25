@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useAnalytics } from '../../hooks/useAnalytics';
 
 interface FileUploadProps {
   onFileSelect: (files: File[]) => void;
@@ -15,6 +16,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [error, setError] = useState<string>('');
+  const { trackFileUpload } = useAnalytics();
 
   const validateFiles = useCallback((files: File[]): boolean => {
     let totalSize = 0;
@@ -50,9 +52,13 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     
     const fileArray = Array.from(files);
     if (validateFiles(fileArray)) {
+      // 跟踪文件上传事件
+      const totalSize = fileArray.reduce((sum, file) => sum + file.size, 0);
+      trackFileUpload(fileArray.length, totalSize);
+      
       onFileSelect(fileArray);
     }
-  }, [onFileSelect, validateFiles]);
+  }, [onFileSelect, validateFiles, trackFileUpload]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();

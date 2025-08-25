@@ -1,16 +1,24 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Home } from './pages/Home'
 import { Privacy, Terms, About } from './pages/Legal'
+import { useAnalytics } from './hooks/useAnalytics'
 import './App.css'
 
 function App() {
   const [path, setPath] = useState(window.location.pathname)
+  const { trackPageView } = useAnalytics()
 
   useEffect(() => {
     const onPop = () => setPath(window.location.pathname)
     window.addEventListener('popstate', onPop)
     return () => window.removeEventListener('popstate', onPop)
   }, [])
+
+  // 跟踪页面浏览
+  useEffect(() => {
+    const pageName = path === '/' ? 'home' : path.slice(1)
+    trackPageView(pageName)
+  }, [path, trackPageView])
 
   const navigate = (to: string) => {
     if (to !== window.location.pathname) {
