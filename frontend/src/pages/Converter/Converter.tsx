@@ -53,7 +53,7 @@ export const Converter: React.FC = () => {
     setImages(prev => prev.filter(img => img.id !== id));
   };
 
-  const handleConvert = (conversionSettings: any) => {
+  const handleConvert = (_settings: any) => {
     setIsConverting(true);
     setConvertedCount(0);
     
@@ -71,8 +71,8 @@ export const Converter: React.FC = () => {
     }, 1000);
   };
 
-  const handleBatchConvert = (conversionSettings: any) => {
-    handleConvert(conversionSettings);
+  const handleBatchConvert = (_settings: any) => {
+    handleConvert(_settings);
   };
 
   const handleSettingsChange = (newSettings: AdvancedSettings) => {

@@ -3,7 +3,6 @@ import { Logo } from '../../components';
 import { FileUpload } from '../../components/FileUpload'; // 引入文件上传组件
 import { Settings } from '../../components/Settings'; // 引入高级设置组件
 import { Conversion } from '../../components/Conversion'; // 引入转换设置组件
-import { ImagePreview } from '../../components/ImagePreview'; // 引入图片预览组件（未使用）
 
 // 定义图片文件的类型
 interface ImageFile {
@@ -45,7 +44,6 @@ interface ConversionSettings {
 
 // Home组件，主页面
 export const Home: React.FC = () => {
-  const [testState, setTestState] = useState(false); // 测试用状态（未实际使用）
   const [images, setImages] = useState<ImageFile[]>([]); // 图片列表状态
   const [isConverting, setIsConverting] = useState(false); // 是否正在转换
   const [convertedCount, setConvertedCount] = useState(0); // 已转换图片数量
@@ -54,8 +52,6 @@ export const Home: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 控制下拉菜单的显示状态
   const dropdownTimerRef = useRef<number | null>(null); // 下拉关闭的延迟计时器
   const [currentPage, setCurrentPage] = useState<'home' | 'privacy' | 'terms' | 'contact'>('home'); // 当前页面状态
-
-  // （已移除挂载时添加测试图片的逻辑，因实际测试已用真实照片，无需保留此代码）
 
   // 高级设置的状态
   const [advancedSettings, setAdvancedSettings] = useState<AdvancedSettings>({
@@ -151,12 +147,6 @@ export const Home: React.FC = () => {
     handleConvert(settings);
   };
 
-  // 移除指定id的图片
-  const handleRemoveImage = (id: string) => {
-    setImages(prev => prev.filter(img => img.id !== id)); // 过滤掉该图片
-    setTotalCount(prev => prev - 1); // 总数减一
-  };
-
   // 下载转换后的图片
   const handleDownload = (image: ImageFile) => {
     if (!image.converted) { // 没有转换结果时提示
@@ -180,13 +170,6 @@ export const Home: React.FC = () => {
         ? { ...img, converted: undefined } // 清除转换结果
         : img
     ));
-  };
-
-  // 页面导航函数
-  const navigateToPage = (page: 'home' | 'privacy' | 'terms' | 'contact') => {
-    setCurrentPage(page);
-    // 滚动到页面顶部
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // 返回首页
@@ -991,7 +974,7 @@ export const Home: React.FC = () => {
                         key={tool} 
                         onClick={() => {
                           // 解析转换格式
-                          const [fromFormat, toFormat] = tool.split('转');
+                          const [, toFormat] = tool.split('转');
                           // 设置预设格式
                           setPresetFormat(toFormat.toLowerCase() as any);
                           // 滚动到文件选择区域

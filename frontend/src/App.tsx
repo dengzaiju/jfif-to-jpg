@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Home } from './pages/Home'
 import { Privacy, Terms, About } from './pages/Legal'
 import { useAnalytics } from './hooks/useAnalytics'
@@ -19,14 +19,6 @@ function App() {
     const pageName = path === '/' ? 'home' : path.slice(1)
     trackPageView(pageName)
   }, [path, trackPageView])
-
-  const navigate = (to: string) => {
-    if (to !== window.location.pathname) {
-      window.history.pushState({}, '', to)
-      setPath(to)
-      window.scrollTo({ top: 0 })
-    }
-  }
 
   const Page = useMemo(() => {
     if (path === '/privacy') return <Privacy />

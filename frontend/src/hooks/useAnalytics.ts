@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { event } from '../config/analytics';
 
 // 自定义事件 Hook
