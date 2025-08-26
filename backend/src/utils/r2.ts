@@ -79,7 +79,7 @@ export class R2Service {
    */
   async listFiles(prefix?: string, limit: number = 100): Promise<R2File[]> {
     const objects = await this.bucket.list({ prefix, limit });
-    return objects.objects.map(obj => ({
+    return objects.objects.map((obj: any) => ({
       key: obj.key,
       size: obj.size,
       uploaded: new Date(obj.uploaded),
