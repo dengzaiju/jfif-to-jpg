@@ -103,43 +103,57 @@ export const Home: React.FC = () => {
   };
 
   // 单张或批量转换处理
-  const handleConvert = (settings: ConversionSettings) => {
-    if (images.length === 0) { // 没有图片时提示
+  const handleConvert = async (settings: ConversionSettings) => {
+    if (images.length === 0) {
       alert('请先上传图片文件');
       return;
     }
 
-    setIsConverting(true); // 设置为正在转换
-    setConvertedCount(0); // 重置已转换数量
-    
-    // 模拟转换过程
-    let currentCount = 0; // 当前已转换数量
-    const interval = setInterval(() => {
-      currentCount++; // 增加计数
-      setConvertedCount(currentCount); // 更新状态
-      
-      if (currentCount >= images.length) { // 全部转换完成
-        setIsConverting(false); // 结束转换
-        clearInterval(interval); // 清除定时器
-        
-        // 更新图片列表，添加converted字段与闪烁标记
-        setImages(prev => prev.map(img => ({
+    setIsConverting(true);
+    setConvertedCount(0);
+
+    try {
+      const results = await Promise.all(images.map(async (img) => {
+        const { convertImageInBrowser } = await import('../../utils/convertImage');
+        const resizeOption = settings.resize === 'original'
+          ? 'original'
+          : ((settings.width || settings.height)
+              ? { width: settings.width || 0, height: settings.height || 0 }
+              : 'original');
+        const { blob, url, width, height } = await convertImageInBrowser(img.file, {
+          format: settings.format as any,
+          quality: settings.quality,
+          resize: resizeOption as any,
+          maintainAspectRatio: settings.maintainAspectRatio,
+        });
+        return { id: img.id, url, size: blob.size, width, height };
+      }));
+
+      setImages(prev => prev.map(img => {
+        const r = results.find(x => x.id === img.id);
+        if (!r) return img;
+        return {
           ...img,
           converted: {
-            url: img.preview, // 实际应为转换后图片的URL，这里用原图模拟
-            format: settings.format, // 转换格式
-            size: Math.floor(img.file.size * 0.8), // 模拟压缩后大小
-            dimensions: { width: 1920, height: 1080 } // 模拟尺寸
+            url: r.url,
+            format: settings.format,
+            size: r.size,
+            dimensions: { width: r.width, height: r.height },
           },
           justConverted: true,
-        })));
+        };
+      }));
 
-        // 2秒后关闭闪烁效果
-        setTimeout(() => {
-          setImages(prev => prev.map(img => ({ ...img, justConverted: false })));
-        }, 2000);
-      }
-    }, 1000); // 每秒转换一张
+      setConvertedCount(images.length);
+    } catch (e) {
+      console.error(e);
+      alert('转换失败，请重试。');
+    } finally {
+      setIsConverting(false);
+      setTimeout(() => {
+        setImages(prev => prev.map(img => ({ ...img, justConverted: false })));
+      }, 2000);
+    }
   };
 
   // 批量转换，直接调用handleConvert
@@ -643,7 +657,7 @@ export const Home: React.FC = () => {
             <div className="flex items-center gap-8">
               {/* 品牌区 */}
               <div className="flex items-center space-x-3">
-                <Logo size={32} rounded="md" backgroundColorClass="bg-transparent" imgSrc="/src/assets/logo.svg" imgAlt="logo" />
+                <Logo size={32} rounded="md" backgroundColorClass="bg-transparent" imgSrc="/icons/logo.svg" imgAlt="logo" />
                 <div>
                   <span className="text-xl md:text-2xl font-bold text-[#646cff]">JFIF转JPG工具站</span>
                   <p className="hidden sm:block text-xs md:text-sm text-[#646cff]">专业的在线图片格式转换工具</p>
