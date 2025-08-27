@@ -1047,7 +1047,7 @@ export const Home: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2">
-                                <Logo size={32} rounded="md" backgroundColorClass="bg-transparent" imgSrc="/src/assets/logo.svg" imgAlt="logo" />
+              <Logo size={32} rounded="md" backgroundColorClass="bg-transparent" imgSrc="/icons/logo.svg" imgAlt="logo" />
                  <span className="text-lg font-semibold">JFIF转JPG工具站</span>
               </div>
               <p className="mt-3 text-sm text-[#646cff]">一键完成 jfif to jpg 在线转换。免费、快速、稳定，支持批量与高质量输出。</p>
