@@ -1069,7 +1069,7 @@ export const Home: React.FC = () => {
                       { key: 'gifToWebp', tool: t('home.tools.gifToWebp'), from: 'GIF', to: 'WebP' },
                       { key: 'bmpToGif', tool: t('home.tools.bmpToGif'), from: 'BMP', to: 'GIF' },
                       { key: 'gifToBmp', tool: t('home.tools.gifToBmp'), from: 'GIF', to: 'BMP' }
-                    ].map(({ key, tool, from, to }) => (
+                    ].map(({ key, tool, to }) => (
                       <button 
                         key={key} 
                         onClick={() => {
