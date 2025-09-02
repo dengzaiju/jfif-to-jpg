@@ -5,6 +5,7 @@ import { Settings } from '../../components/Settings'; // 引入高级设置组�
 import { Conversion } from '../../components/Conversion'; // 引入转换设置组件
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { useI18n } from '../../hooks/useI18n';
+import { MetaManager, META_CONFIGS } from '../../utils/metaManager'; // 引入Meta管理工具
 
 // 定义图片文件的类型
 interface ImageFile {
@@ -105,6 +106,14 @@ export const Home: React.FC = () => {
   // 组件初始化时应用主题
   React.useEffect(() => {
     applyTheme(advancedSettings.theme);
+    
+    // 使用MetaManager设置完整的SEO标签
+    MetaManager.setAll(META_CONFIGS.home);
+    
+    // 组件卸载时清理
+    return () => {
+      MetaManager.cleanup();
+    };
   }, []);
 
   // 应用高级设置到所有图片（目前只是打印日志）

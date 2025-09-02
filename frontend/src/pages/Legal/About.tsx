@@ -1,35 +1,14 @@
 import React, { useEffect } from 'react';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { useI18n } from '../../hooks/useI18n';
+import { MetaManager, META_CONFIGS } from '../../utils/metaManager'; // 引入Meta管理工具
 
 export const About: React.FC = () => {
 	useEffect(() => {
-		const title = 'About jfiftojpg.site | Free JFIF to JPG (jfif to jpg) Converter';
-		const description = 'Learn about jfiftojpg.site — a simple, fast, secure tool for jfif to jpg and other image formats. Free, no account, files auto-deleted.';
-		const canonicalUrl = 'https://www.jfiftojpg.site/about';
-
-		document.title = title;
-
-		const setMeta = (name: string, content: string) => {
-			let tag = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement | null;
-			if (!tag) {
-				tag = document.createElement('meta');
-				tag.setAttribute('name', name);
-				document.head.appendChild(tag);
-			}
-			tag.setAttribute('content', content);
-		};
-
-		const setCanonical = (href: string) => {
-			let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-			if (!link) {
-				link = document.createElement('link');
-				link.setAttribute('rel', 'canonical');
-				document.head.appendChild(link);
-			}
-			link.setAttribute('href', href);
-		};
-
+		// 使用MetaManager设置SEO标签
+		MetaManager.setAll(META_CONFIGS.about);
+		
+		// 设置JSON-LD结构化数据
 		const upsertJsonLd = (id: string, data: unknown) => {
 			let script = document.getElementById(id) as HTMLScriptElement | null;
 			if (!script) {
@@ -42,8 +21,8 @@ export const About: React.FC = () => {
 			return () => { script && script.remove(); };
 		};
 
-		setMeta('description', description);
-		setCanonical(canonicalUrl);
+		const canonicalUrl = 'https://www.jfiftojpg.site/about';
+		const description = 'Learn about jfiftojpg.site — a simple, fast, secure tool for jfif to jpg and other image formats. Free, no account, files auto-deleted.';
 
 		const cleanup1 = upsertJsonLd('ld-about-page', {
 			"@context": 'https://schema.org',
@@ -66,6 +45,7 @@ export const About: React.FC = () => {
 		return () => {
 			cleanup1();
 			cleanup2();
+			MetaManager.cleanup();
 		};
 	}, []);
 
