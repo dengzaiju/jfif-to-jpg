@@ -166,16 +166,28 @@ export const META_CONFIGS = {
   about: {
     title: '关于我们 - JFIF to JPG 转换器',
     description: '了解jfiftojpg.site的故事和使命。我们专注于提供简单、快速、安全的图片格式转换服务，支持JFIF、JPG、PNG、WebP、BMP、GIF等格式。',
-    canonical: 'https://jfiftojpg.site/about'
+    canonical: 'https://jfiftojpg.site/about',
+    ogTitle: 'About - JFIF to JPG Converter',
+    ogDescription: 'Learn about jfiftojpg.site — a simple, fast, secure tool for jfif to jpg and other image formats. Free, no account, files auto-deleted.',
+    twitterTitle: 'About - JFIF to JPG Converter',
+    twitterDescription: 'Learn about jfiftojpg.site — a simple, fast, secure tool for jfif to jpg and other image formats.'
   },
   privacy: {
     title: '隐私政策 - JFIF to JPG 转换器',
     description: 'jfiftojpg.site的隐私政策。我们重视您的隐私，承诺保护您的个人信息，采用安全的数据处理方式。',
-    canonical: 'https://jfiftojpg.site/privacy'
+    canonical: 'https://jfiftojpg.site/privacy',
+    ogTitle: 'Privacy Policy - JFIF to JPG Converter',
+    ogDescription: 'Privacy policy for jfiftojpg.site. We value your privacy and are committed to protecting your personal information with secure data processing.',
+    twitterTitle: 'Privacy Policy - JFIF to JPG Converter',
+    twitterDescription: 'Privacy policy for jfiftojpg.site. We value your privacy and are committed to protecting your personal information.'
   },
   terms: {
     title: '服务条款 - JFIF to JPG 转换器',
     description: 'jfiftojpg.site的服务条款。使用我们的服务即表示您同意这些条款，包括我们的隐私政策。',
-    canonical: 'https://jfiftojpg.site/terms'
+    canonical: 'https://jfiftojpg.site/terms',
+    ogTitle: 'Terms of Service - JFIF to JPG Converter',
+    ogDescription: 'Terms for using jfiftojpg.site\'s free jfif to jpg converter. Simple use, no sign-up, secure processing, and fair-use rules.',
+    twitterTitle: 'Terms of Service - JFIF to JPG Converter',
+    twitterDescription: 'Terms for using jfiftojpg.site\'s free jfif to jpg converter. Simple use, no sign-up, secure processing.'
   }
 }; 

@@ -76,7 +76,7 @@ const defaultMessages: Record<Locale, Messages> = {
     },
     app: {
       title: 'JFIF to JPG Online Converter',
-      subtitle: 'Free online convert JFIF to JPG (jfif to jpg), high quality, fast and secure.',
+      subtitle: 'Free online JFIF to JPG converter, supports batch conversion, quality adjustment, and size adjustment. Drag and drop to upload, one-click conversion of multiple formats, fast, safe, and no registration required.',
       nav: { others: 'Other conversions', features: 'Features', info: 'Info', faq: 'FAQ' },
       upload: { title: 'Choose File (JFIF to JPG)' },
       preview: { title: 'Preview (JFIF to JPG Comparison)' },
