@@ -5,6 +5,9 @@ export interface ConvertOptions {
 	quality?: number; // 0-100
 	resize?: 'original' | 'small' | 'medium' | 'large' | { width: number; height: number };
 	maintainAspectRatio?: boolean;
+	compressionLevel?: 'none' | 'low' | 'medium' | 'high';
+	autoRotate?: boolean;
+	clearMetadata?: boolean;
 }
 
 function createImageBitmapFromFile(file: File): Promise<HTMLImageElement> {
@@ -65,10 +68,36 @@ export async function convertImageInBrowser(
 	canvas.height = height;
 	const ctx = canvas.getContext('2d');
 	if (!ctx) throw new Error('Canvas 2D context not available');
+	
+	// 应用自动旋转（基于EXIF数据）
+	if (options.autoRotate) {
+		// 这里可以添加EXIF旋转处理逻辑
+		// 由于浏览器限制，我们暂时跳过复杂的EXIF处理
+		console.log('Auto-rotate enabled (EXIF processing would be implemented here)');
+	}
+	
 	ctx.drawImage(img, 0, 0, width, height);
 
 	const mime = mimeForFormat(options.format);
-	const quality = typeof options.quality === 'number' ? Math.min(100, Math.max(0, options.quality)) / 100 : 0.92;
+	let quality = typeof options.quality === 'number' ? Math.min(100, Math.max(0, options.quality)) / 100 : 0.92;
+	
+	// 根据压缩等级调整质量
+	if (options.compressionLevel) {
+		switch (options.compressionLevel) {
+			case 'none':
+				quality = Math.max(quality, 0.95);
+				break;
+			case 'low':
+				quality = Math.max(quality, 0.85);
+				break;
+			case 'medium':
+				quality = Math.max(quality * 0.9, 0.7);
+				break;
+			case 'high':
+				quality = Math.max(quality * 0.8, 0.5);
+				break;
+		}
+	}
 
 	return new Promise((resolve, reject) => {
 		canvas.toBlob((blob) => {

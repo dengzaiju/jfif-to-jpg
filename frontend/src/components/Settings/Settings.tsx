@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useI18n } from '../../hooks/useI18n';
 
 interface AdvancedSettings {
   autoRotate: boolean;
@@ -19,213 +20,150 @@ interface SettingsProps {
   onReset: () => void;
 }
 
-export const Settings: React.FC<SettingsProps> = ({
-  settings,
-  onSettingsChange,
-  onApplyToAll,
-  onReset
-}) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [showCustomSize, setShowCustomSize] = useState(false);
+export const Settings: React.FC<SettingsProps> = ({ settings, onSettingsChange, onApplyToAll, onReset }) => {
+  const { t } = useI18n();
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleSettingChange = (key: keyof AdvancedSettings, value: any) => {
+  const handleChange = <K extends keyof AdvancedSettings>(key: K, value: AdvancedSettings[K]) => {
     onSettingsChange({ ...settings, [key]: value });
-    
-    // 当选择自定义尺寸时，显示自定义尺寸输入框
-    if (key === 'imageSize' && value === 'custom') {
-      setShowCustomSize(true);
-    } else if (key === 'imageSize') {
-      setShowCustomSize(false);
-    }
-  };
-
-  const toggleExpanded = () => {
-    setIsExpanded(!isExpanded);
-  };
-
-  const handleThemeChange = (theme: 'light' | 'dark') => {
-    handleSettingChange('theme', theme);
-    // 应用主题到页面
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200">
-      {/* 设置标题栏 */}
-      <div
-        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
-        onClick={toggleExpanded}
+    <div className="bg-white rounded-lg border border-gray-200 p-4">
+      {/* 标题栏 */}
+      <div 
+        className="flex items-center justify-between cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center">
-          <span className="w-5 h-5 text-gray-500 mr-2">⚙️</span>
-          <span className="text-sm font-medium text-gray-900">高级设置（可选）</span>
+          <svg className="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span className="text-gray-900 font-medium">{t('common.advancedSettings')}</span>
         </div>
-        <svg
-          className={`w-5 h-5 text-gray-500 transition-transform ${
-            isExpanded ? 'rotate-180' : ''
-          }`}
-          fill="none"
-          stroke="currentColor"
+        <svg 
+          className={`w-5 h-5 text-gray-600 transition-transform ${isOpen ? 'rotate-180' : ''}`} 
+          fill="none" 
+          stroke="currentColor" 
           viewBox="0 0 24 24"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </div>
 
-      {/* 设置内容 */}
-      {isExpanded && (
-        <div className="border-t border-gray-200 p-4 space-y-4">
-          {/* 第一行设置 */}
+      {/* 展开内容 */}
+      {isOpen && (
+        <div className="mt-4 space-y-4">
+          {/* 第一行：三个下拉菜单 */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* 图片质量 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                图片质量
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('settings.quality')}</label>
               <select
                 value={settings.imageQuality}
-                onChange={(e) => handleSettingChange('imageQuality', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => handleChange('imageQuality', e.target.value as AdvancedSettings['imageQuality'])}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               >
-                <option value="low">低质量</option>
-                <option value="medium">中等质量</option>
-                <option value="high">高质量</option>
+                <option value="low">{t('settings.qualityLow')}</option>
+                <option value="medium">{t('settings.qualityMedium')}</option>
+                <option value="high">{t('settings.qualityHigh')}</option>
               </select>
             </div>
-
-            {/* 图片尺寸 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                图片尺寸
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('settings.size')}</label>
               <select
                 value={settings.imageSize}
-                onChange={(e) => handleSettingChange('imageSize', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => handleChange('imageSize', e.target.value as AdvancedSettings['imageSize'])}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               >
-                <option value="original">原始尺寸</option>
-                <option value="custom">自定义尺寸</option>
-                <option value="30%">30%</option>
-                <option value="50%">50%</option>
-                <option value="70%">70%</option>
+                <option value="original">{t('settings.sizeOriginal')}</option>
+                <option value="custom">{t('settings.sizeCustom')}</option>
+                <option value="30%">{t('settings.size30')}</option>
+                <option value="50%">{t('settings.size50')}</option>
+                <option value="70%">{t('settings.size70')}</option>
               </select>
-              
-              {/* 自定义尺寸输入框 */}
-              {showCustomSize && (
-                <div className="mt-2 grid grid-cols-2 gap-2">
-                  <input
-                    type="number"
-                    placeholder="宽度"
-                    value={settings.customWidth || ''}
-                    onChange={(e) => handleSettingChange('customWidth', parseInt(e.target.value) || undefined)}
-                    className="px-2 py-1 border border-gray-300 rounded text-sm"
-                  />
-                  <input
-                    type="number"
-                    placeholder="高度"
-                    value={settings.customHeight || ''}
-                    onChange={(e) => handleSettingChange('customHeight', parseInt(e.target.value) || undefined)}
-                    className="px-2 py-1 border border-gray-300 rounded text-sm"
-                  />
-                </div>
-              )}
             </div>
-
-            {/* 压缩级别 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                压缩级别
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('settings.compression')}</label>
               <select
                 value={settings.compressionLevel}
-                onChange={(e) => handleSettingChange('compressionLevel', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => handleChange('compressionLevel', e.target.value as AdvancedSettings['compressionLevel'])}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               >
-                <option value="none">无压缩</option>
-                <option value="low">低压缩</option>
-                <option value="medium">中等压缩</option>
-                <option value="high">高压缩</option>
+                <option value="none">{t('settings.compressionNone')}</option>
+                <option value="low">{t('settings.compressionLow')}</option>
+                <option value="medium">{t('settings.compressionMedium')}</option>
+                <option value="high">{t('settings.compressionHigh')}</option>
               </select>
             </div>
           </div>
 
-          {/* 第二行设置 */}
+          {/* 第二行：两个复选框和主题选择器 */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* 自动旋转 */}
-            <div className="flex items-center">
+            <label className="inline-flex items-center">
               <input
                 type="checkbox"
-                id="autoRotate"
+                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 checked={settings.autoRotate}
-                onChange={(e) => handleSettingChange('autoRotate', e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                onChange={(e) => handleChange('autoRotate', e.target.checked)}
               />
-              <label htmlFor="autoRotate" className="ml-2 text-sm text-gray-700">
-                自动旋转
-              </label>
-            </div>
-
-            {/* 清除元数据 */}
-            <div className="flex items-center">
+              <span className="ml-2 text-sm text-gray-700">{t('settings.autoRotate')}</span>
+            </label>
+            <label className="inline-flex items-center">
               <input
                 type="checkbox"
-                id="clearMetadata"
+                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 checked={settings.clearMetadata}
-                onChange={(e) => handleSettingChange('clearMetadata', e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                onChange={(e) => handleChange('clearMetadata', e.target.checked)}
               />
-              <label htmlFor="clearMetadata" className="ml-2 text-sm text-gray-700">
-                清除元数据
-              </label>
-            </div>
-
-            {/* 主题选择 */}
+              <span className="ml-2 text-sm text-gray-700">{t('settings.clearMetadata')}</span>
+            </label>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                主题
-              </label>
-              <div className="flex items-center space-x-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('settings.theme')}</label>
+              <div className="flex space-x-2">
                 <button
-                  onClick={() => handleThemeChange('light')}
-                  className={`p-2 rounded-md ${
-                    settings.theme === 'light'
-                      ? 'bg-blue-100 text-blue-600'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  className={`p-2 rounded-md border-2 transition-colors ${
+                    settings.theme === 'light' 
+                      ? 'border-orange-500 bg-yellow-50' 
+                      : 'border-gray-300 bg-white hover:border-gray-400'
                   }`}
+                  onClick={() => handleChange('theme', 'light')}
+                  aria-label={t('settings.themeLight')}
                 >
-                  ☀️
+                  <svg className="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
+                  </svg>
                 </button>
                 <button
-                  onClick={() => handleThemeChange('dark')}
-                  className={`p-2 rounded-md ${
-                    settings.theme === 'dark'
-                      ? 'bg-blue-100 text-blue-600'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  className={`p-2 rounded-md border-2 transition-colors ${
+                    settings.theme === 'dark' 
+                      ? 'border-orange-500 bg-yellow-50' 
+                      : 'border-gray-300 bg-white hover:border-gray-400'
                   }`}
+                  onClick={() => handleChange('theme', 'dark')}
+                  aria-label={t('settings.themeDark')}
                 >
-                  🌙
+                  <svg className="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                  </svg>
                 </button>
               </div>
             </div>
           </div>
 
-          {/* 操作按钮 */}
-          <div className="flex justify-between pt-4 border-t border-gray-200">
-            <button
-              onClick={onApplyToAll}
-              className="px-4 py-2 border border-gray-300 bg-white text-gray-700 text-sm rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
+          {/* 第三行：两个按钮 */}
+          <div className="flex space-x-3 pt-2">
+            <button 
+              onClick={onApplyToAll} 
+              className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
             >
-              应用到所有文件
+              {t('common.applyToAll')}
             </button>
-            <button
-              onClick={onReset}
-              className="px-4 py-2 border border-gray-300 bg-white text-gray-700 text-sm rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            <button 
+              onClick={onReset} 
+              className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
             >
-              重置选项
+              {t('common.resetOptions')}
             </button>
           </div>
         </div>

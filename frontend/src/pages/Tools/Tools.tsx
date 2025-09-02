@@ -9,6 +9,8 @@ import {
   DocumentDuplicateIcon,
   EyeIcon
 } from '@heroicons/react/24/outline';
+import { useI18n } from '../../hooks/useI18n';
+import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 
 interface ToolCard {
   id: string;
@@ -27,7 +29,7 @@ const tools: ToolCard[] = [
     title: 'PNG转JPG',
     description: '将PNG图片转换为JPG格式，支持批量转换',
     icon: PhotoIcon,
-    category: '图片转换',
+    category: 'convert',
     href: '/tools/png-to-jpg'
   },
   {
@@ -35,7 +37,7 @@ const tools: ToolCard[] = [
     title: 'BMP转JPG',
     description: '将BMP图片转换为JPG格式，保持图片质量',
     icon: PhotoIcon,
-    category: '图片转换',
+    category: 'convert',
     href: '/tools/bmp-to-jpg'
   },
   {
@@ -43,7 +45,7 @@ const tools: ToolCard[] = [
     title: 'GIF转JPG',
     description: '将GIF动画转换为JPG静态图片',
     icon: PhotoIcon,
-    category: '图片转换',
+    category: 'convert',
     href: '/tools/gif-to-jpg'
   },
   {
@@ -51,7 +53,7 @@ const tools: ToolCard[] = [
     title: 'WebP转JPG',
     description: '将WebP图片转换为JPG格式，兼容性更好',
     icon: PhotoIcon,
-    category: '图片转换',
+    category: 'convert',
     href: '/tools/webp-to-jpg'
   },
 
@@ -61,7 +63,7 @@ const tools: ToolCard[] = [
     title: '图片压缩',
     description: '智能压缩图片，减小文件大小，保持质量',
     icon: CogIcon,
-    category: '图片处理',
+    category: 'process',
     href: '/tools/image-compress',
     isNew: true
   },
@@ -70,7 +72,7 @@ const tools: ToolCard[] = [
     title: '图片调整',
     description: '调整图片尺寸，支持批量处理',
     icon: ChartBarIcon,
-    category: '图片处理',
+    category: 'process',
     href: '/tools/image-resize'
   },
   {
@@ -78,7 +80,7 @@ const tools: ToolCard[] = [
     title: '图片旋转',
     description: '旋转和翻转图片，支持多种角度',
     icon: ArrowPathIcon,
-    category: '图片处理',
+    category: 'process',
     href: '/tools/image-rotate'
   },
   {
@@ -86,7 +88,7 @@ const tools: ToolCard[] = [
     title: '图片裁剪',
     description: '精确裁剪图片，支持自定义区域',
     icon: EyeIcon,
-    category: '图片处理',
+    category: 'process',
     href: '/tools/image-crop'
   },
 
@@ -96,7 +98,7 @@ const tools: ToolCard[] = [
     title: '图片转PDF',
     description: '将多张图片合并为PDF文档',
     icon: DocumentTextIcon,
-    category: '文档工具',
+    category: 'doc',
     href: '/tools/image-to-pdf'
   },
   {
@@ -104,7 +106,7 @@ const tools: ToolCard[] = [
     title: 'PDF转图片',
     description: '将PDF页面转换为图片格式',
     icon: DocumentDuplicateIcon,
-    category: '文档工具',
+    category: 'doc',
     href: '/tools/pdf-to-image'
   },
 
@@ -114,7 +116,7 @@ const tools: ToolCard[] = [
     title: '批量转换',
     description: '批量转换多种格式，提高工作效率',
     icon: CogIcon,
-    category: '批量工具',
+    category: 'batch',
     href: '/tools/batch-convert',
     isNew: true
   },
@@ -123,14 +125,14 @@ const tools: ToolCard[] = [
     title: '批量重命名',
     description: '批量重命名图片文件，支持多种规则',
     icon: DocumentTextIcon,
-    category: '批量工具',
+    category: 'batch',
     href: '/tools/batch-rename'
   }
 ];
 
-const categories = ['图片转换', '图片处理', '文档工具', '批量工具'];
-
 export const Tools: React.FC = () => {
+  const { t } = useI18n();
+
   const getToolsByCategory = (category: string) => {
     return tools.filter(tool => tool.category === category);
   };
@@ -144,14 +146,15 @@ export const Tools: React.FC = () => {
             <div className="flex items-center">
               <a href="/" className="flex items-center text-gray-500 hover:text-gray-900 mr-4">
                 <ArrowLeftIcon className="w-5 h-5 mr-1" />
-                返回首页
+                {t('common.backHome')}
               </a>
-              <h1 className="text-xl font-bold text-gray-900">工具箱</h1>
+              <h1 className="text-xl font-bold text-gray-900">{t('tools.header.title')}</h1>
             </div>
-            <nav className="flex space-x-8">
-              <a href="/" className="text-gray-500 hover:text-gray-900">首页</a>
-              <a href="/converter" className="text-gray-500 hover:text-gray-900">转换器</a>
-              <a href="#" className="text-gray-500 hover:text-gray-900">帮助</a>
+            <nav className="flex items-center space-x-4">
+              <a href="/" className="text-gray-500 hover:text-gray-900">{t('tools.nav.home')}</a>
+              <a href="/converter" className="text-gray-500 hover:text-gray-900">{t('tools.nav.converter')}</a>
+              <a href="#" className="text-gray-500 hover:text-gray-900">{t('tools.nav.help')}</a>
+              <LanguageSwitcher />
             </nav>
           </div>
         </div>
@@ -162,18 +165,18 @@ export const Tools: React.FC = () => {
         {/* 页面标题 */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            强大的图片处理工具箱
+            {t('tools.hero.title')}
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            提供多种图片处理工具，满足您的各种需求。从格式转换到图片编辑，从单张处理到批量操作，我们都有专业的解决方案。
+            {t('tools.hero.subtitle')}
           </p>
         </div>
 
         {/* 工具分类展示 */}
         <div className="space-y-12">
-          {categories.map((category) => (
+          {[ 'convert','process','doc','batch' ].map((category) => (
             <section key={category}>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">{category}</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">{t(`tools.categories.${category}`)}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {getToolsByCategory(category).map((tool) => (
                   <div
@@ -186,24 +189,24 @@ export const Tools: React.FC = () => {
                       </div>
                       {tool.isNew && (
                         <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">
-                          新功能
+                          {t('tools.card.new')}
                         </span>
                       )}
                     </div>
                     
                     <h4 className="text-lg font-medium text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                      {tool.title}
+                      {t(`tools.cards.${tool.id}.title`) || tool.title}
                     </h4>
                     
                     <p className="text-gray-600 text-sm mb-4">
-                      {tool.description}
+                      {t(`tools.cards.${tool.id}.desc`) || tool.description}
                     </p>
                     
                     <a
                       href={tool.href}
                       className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium group-hover:underline"
                     >
-                      立即使用
+                      {t('tools.card.useNow')}
                       <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
@@ -217,7 +220,7 @@ export const Tools: React.FC = () => {
 
         {/* 特色功能 */}
         <section className="mt-16 bg-white rounded-lg border border-gray-200 p-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">为什么选择我们的工具箱？</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">{t('tools.why.title')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">

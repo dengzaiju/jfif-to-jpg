@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { FileUpload, ImagePreview, Conversion, Settings } from '../../components';
 import { ArrowLeftIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { LanguageSwitcher } from '../../components/LanguageSwitcher';
+import { useI18n } from '../../hooks/useI18n';
 
 interface ImageFile {
   id: string;
@@ -39,6 +41,7 @@ export const Converter: React.FC = () => {
     compressionLevel: 'medium',
     outputFormat: 'jpg'
   });
+  const { t } = useI18n();
 
   const handleFileSelect = (files: File[]) => {
     const newImages: ImageFile[] = files.map((file, index) => ({
@@ -104,14 +107,15 @@ export const Converter: React.FC = () => {
             <div className="flex items-center">
               <a href="/" className="flex items-center text-gray-500 hover:text-gray-900 mr-4">
                 <ArrowLeftIcon className="w-5 h-5 mr-1" />
-                返回首页
+                {t('common.backHome')}
               </a>
-              <h1 className="text-xl font-bold text-gray-900">图片格式转换器</h1>
+              <h1 className="text-xl font-bold text-gray-900">{t('converter.header.title')}</h1>
             </div>
-            <nav className="flex space-x-8">
-              <a href="#" className="text-gray-500 hover:text-gray-900">批量转换</a>
-              <a href="#" className="text-gray-500 hover:text-gray-900">历史记录</a>
-              <a href="#" className="text-gray-500 hover:text-gray-900">帮助</a>
+            <nav className="flex items-center space-x-4">
+              <a href="#" className="text-gray-500 hover:text-gray-900">{t('converter.header.batch')}</a>
+              <a href="#" className="text-gray-500 hover:text-gray-900">{t('converter.header.history')}</a>
+              <a href="#" className="text-gray-500 hover:text-gray-900">{t('converter.header.help')}</a>
+              <LanguageSwitcher />
             </nav>
           </div>
         </div>
@@ -124,7 +128,7 @@ export const Converter: React.FC = () => {
           <div className="lg:col-span-1 space-y-6">
             {/* 文件上传 */}
             <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">上传图片</h2>
+              <h2 className="text-lg font-medium text-gray-900 mb-4">{t('converter.upload')}</h2>
               <FileUpload onFileSelect={handleFileSelect} />
             </div>
 
@@ -143,15 +147,15 @@ export const Converter: React.FC = () => {
               <h3 className="text-lg font-medium text-gray-900 mb-4">转换统计</h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">已上传</span>
+                  <span className="text-gray-600">{t('converter.stats.uploaded')}</span>
                   <span className="font-medium text-gray-900">{images.length} 个文件</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">已转换</span>
+                  <span className="text-gray-600">{t('converter.stats.converted')}</span>
                   <span className="font-medium text-green-600">{convertedCount} 个文件</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">转换进度</span>
+                  <span className="text-gray-600">{t('converter.stats.progress')}</span>
                   <span className="font-medium text-blue-600">
                     {images.length > 0 ? Math.round((convertedCount / images.length) * 100) : 0}%
                   </span>

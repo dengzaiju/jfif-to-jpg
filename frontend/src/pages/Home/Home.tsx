@@ -3,6 +3,8 @@ import { Logo } from '../../components';
 import { FileUpload } from '../../components/FileUpload'; // 引入文件上传组件
 import { Settings } from '../../components/Settings'; // 引入高级设置组件
 import { Conversion } from '../../components/Conversion'; // 引入转换设置组件
+import { LanguageSwitcher } from '../../components/LanguageSwitcher';
+import { useI18n } from '../../hooks/useI18n';
 
 // 定义图片文件的类型
 interface ImageFile {
@@ -52,6 +54,7 @@ export const Home: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 控制下拉菜单的显示状态
   const dropdownTimerRef = useRef<number | null>(null); // 下拉关闭的延迟计时器
   const [currentPage, setCurrentPage] = useState<'home' | 'privacy' | 'terms' | 'contact'>('home'); // 当前页面状态
+  const { t } = useI18n();
 
   // 高级设置的状态
   const [advancedSettings, setAdvancedSettings] = useState<AdvancedSettings>({
@@ -78,10 +81,31 @@ export const Home: React.FC = () => {
     setTotalCount(prev => prev + files.length); // 更新总数
   };
 
+  // 应用主题切换
+  const applyTheme = (theme: 'light' | 'dark') => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.body.classList.add('bg-gray-900', 'text-white');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.body.classList.remove('bg-gray-900', 'text-white');
+    }
+  };
+
   // 高级设置变更处理
   const handleSettingsChange = (newSettings: AdvancedSettings) => {
     setAdvancedSettings(newSettings); // 更新高级设置
+    
+    // 应用主题切换
+    if (newSettings.theme !== advancedSettings.theme) {
+      applyTheme(newSettings.theme);
+    }
   };
+
+  // 组件初始化时应用主题
+  React.useEffect(() => {
+    applyTheme(advancedSettings.theme);
+  }, []);
 
   // 应用高级设置到所有图片（目前只是打印日志）
   const handleApplyToAll = () => {
@@ -115,16 +139,59 @@ export const Home: React.FC = () => {
     try {
       const results = await Promise.all(images.map(async (img) => {
         const { convertImageInBrowser } = await import('../../utils/convertImage');
-        const resizeOption = settings.resize === 'original'
+        
+        // 结合Conversion组件的设置和高级设置
+        let finalQuality = settings.quality;
+        let finalResize = settings.resize === 'original'
           ? 'original'
           : ((settings.width || settings.height)
               ? { width: settings.width || 0, height: settings.height || 0 }
               : 'original');
+        
+        // 应用高级设置中的图片质量
+        if (advancedSettings.imageQuality === 'low') {
+          finalQuality = 60;
+        } else if (advancedSettings.imageQuality === 'medium') {
+          finalQuality = 80;
+        } else if (advancedSettings.imageQuality === 'high') {
+          finalQuality = 95;
+        }
+        
+        // 应用高级设置中的图片尺寸
+        if (advancedSettings.imageSize !== 'original') {
+          if (advancedSettings.imageSize === '30%') {
+            finalResize = 'small';
+          } else if (advancedSettings.imageSize === '50%') {
+            finalResize = 'medium';
+          } else if (advancedSettings.imageSize === '70%') {
+            finalResize = 'large';
+          } else if (advancedSettings.imageSize === 'custom' && advancedSettings.customWidth && advancedSettings.customHeight) {
+            finalResize = { 
+              width: advancedSettings.customWidth, 
+              height: advancedSettings.customHeight 
+            };
+          }
+        }
+        
+        // 调试日志：显示应用的设置
+        console.log('应用高级设置:', {
+          originalQuality: settings.quality,
+          finalQuality,
+          originalResize: settings.resize,
+          finalResize,
+          compressionLevel: advancedSettings.compressionLevel,
+          autoRotate: advancedSettings.autoRotate,
+          clearMetadata: advancedSettings.clearMetadata
+        });
+        
         const { blob, url, width, height } = await convertImageInBrowser(img.file, {
           format: settings.format as any,
-          quality: settings.quality,
-          resize: resizeOption as any,
+          quality: finalQuality,
+          resize: finalResize as any,
           maintainAspectRatio: settings.maintainAspectRatio,
+          compressionLevel: advancedSettings.compressionLevel,
+          autoRotate: advancedSettings.autoRotate,
+          clearMetadata: advancedSettings.clearMetadata,
         });
         return { id: img.id, url, size: blob.size, width, height };
       }));
@@ -659,8 +726,8 @@ export const Home: React.FC = () => {
               <div className="flex items-center space-x-3">
                 <Logo size={32} rounded="md" backgroundColorClass="bg-transparent" imgSrc="/icons/logo.svg" imgAlt="logo" />
                 <div>
-                  <span className="text-xl md:text-2xl font-bold text-[#646cff]">JFIF转JPG工具站</span>
-                  <p className="hidden sm:block text-xs md:text-sm text-[#646cff]">专业的在线图片格式转换工具</p>
+                  <span className="text-xl md:text-2xl font-bold text-[#646cff]">{t('common.brandName')}</span>
+                  <p className="hidden sm:block text-xs md:text-sm text-[#646cff]">{t('common.brandSlogan')}</p>
                 </div>
               </div>
 
@@ -676,7 +743,7 @@ export const Home: React.FC = () => {
                     dropdownTimerRef.current = window.setTimeout(() => setIsDropdownOpen(false), 600);
                   }}
                 >
-                  <button className="text-[#646cff] hover:text-[#535bf2] bg-transparent px-0 py-0 focus:outline-none">其他转换</button>
+                  <button className="text-[#646cff] hover:text-[#535bf2] bg-transparent px-0 py-0 focus:outline-none">{t('app.nav.others')}</button>
                   <div
                     className={`absolute left-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50 ${isDropdownOpen ? 'block' : 'hidden'}`}
                   >
@@ -694,19 +761,23 @@ export const Home: React.FC = () => {
                           setIsDropdownOpen(false);
                         }}
                       >
-                        转为 {f.toUpperCase()}
+                        {f === 'jpg' && t('app.dropdown.toJPG')}
+                        {f === 'png' && t('app.dropdown.toPNG')}
+                        {f === 'webp' && t('app.dropdown.toWEBP')}
+                        {f === 'bmp' && t('app.dropdown.toBMP')}
+                        {f === 'gif' && t('app.dropdown.toGIF')}
                       </button>
                     ))}
                   </div>
                 </div>
-                <a href="#features" className="text-gray-800 hover:text-blue-600">特色</a>
-                <a href="#info" className="text-gray-800 hover:text-blue-600">信息</a>
-                <a href="#faq" className="text-gray-800 hover:text-blue-600">常见问题</a>
+                <a href="#features" className="text-gray-800 hover:text-blue-600">{t('app.nav.features')}</a>
+                <a href="#info" className="text-gray-800 hover:text-blue-600">{t('app.nav.info')}</a>
+                <a href="#faq" className="text-gray-800 hover:text-blue-600">{t('app.nav.faq')}</a>
               </nav>
             </div>
 
-            {/* 右侧：留空以保持布局两端对齐 */}
-            <div className="hidden md:block" />
+            {/* 右侧：语言切换 */}
+            <div className="hidden md:block"><LanguageSwitcher /></div>
           </div>
         </div>
       </header>
@@ -716,14 +787,14 @@ export const Home: React.FC = () => {
         <div className="space-y-8">
           {/* 页面标题 */}
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">JFIF to JPG 在线转换器</h1>
-            <p className="text-lg text-gray-600">免费在线将 JFIF 转换为 JPG（jfif to jpg），高质量、快速、安全。</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('app.title')}</h1>
+            <p className="text-lg text-gray-600">{t('app.subtitle')}</p>
           </div>
 
           {/* 文件上传区域 */}
           <section id="file-upload" className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">选择文件（JFIF to JPG）</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('app.upload.title')}</h2>
               <FileUpload 
                 onFileSelect={handleFileSelect} // 上传文件回调
                 maxFileSize={10} // 单文件最大10MB
@@ -736,20 +807,20 @@ export const Home: React.FC = () => {
           {/* 预览结果区域 */}
           <section className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">预览结果（JFIF 转 JPG 对比）</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('app.preview.title')}</h2>
               {images.length === 0 ? ( // 没有图片时显示提示
                 <div className="text-center py-12">
                   <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                     <span className="text-2xl text-gray-400">📷</span>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">暂无图片</h3>
-                  <p className="text-gray-500">请先上传图片文件开始转换</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t('preview.emptyTitle')}</h3>
+                  <p className="text-gray-500">{t('preview.emptyDesc')}</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* 原始图片预览 */}
                   <div className="text-center">
-                    <h4 className="text-md font-medium text-gray-900 mb-3">原始图片</h4>
+                    <h4 className="text-md font-medium text-gray-900 mb-3">{t('preview.original')}</h4>
                     <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-3 border-2 border-dashed border-gray-300">
                       <img
                         src={images[0].preview} // 原图预览
@@ -765,7 +836,7 @@ export const Home: React.FC = () => {
 
                   {/* 转换后图片预览 */}
                   <div className="text-center">
-                    <h4 className="text-md font-medium text-gray-900 mb-3">转换后图片</h4>
+                    <h4 className="text-md font-medium text-gray-900 mb-3">{t('preview.converted')}</h4>
                     {images[0].converted ? ( // 如果已转换
                       <div>
                         <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-3 border-2 border-dashed border-green-300">
@@ -784,13 +855,13 @@ export const Home: React.FC = () => {
                             onClick={() => handleDownload(images[0])} // 下载按钮
                             className={`${images[0].justConverted ? 'animate-pulse ring-2 ring-blue-300' : ''} px-4 py-2 border border-blue-300 bg-white text-blue-700 rounded hover:bg-blue-50 text-sm font-medium`}
                           >
-                            下载{images[0].converted.format.toUpperCase()}
+                            {t('preview.download')} {images[0].converted.format.toUpperCase()}
                           </button>
                           <button
                             onClick={() => handleReconvert(images[0].id)} // 重新转换按钮
                             className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 text-sm font-medium"
                           >
-                            重新转换
+                            {t('preview.reconvert')}
                           </button>
                         </div>
                       </div>
@@ -799,11 +870,11 @@ export const Home: React.FC = () => {
                         <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center mb-3 border-2 border-dashed border-gray-300">
                           <div className="text-center text-gray-400">
                             <div className="text-4xl mb-2">⏳</div>
-                            <p className="text-sm">等待转换</p>
+                            <p className="text-sm">{t('preview.waiting')}</p>
                           </div>
                         </div>
                         <div className="text-sm text-gray-500">
-                          <p className="bg-gray-100 px-3 py-2 rounded">点击下方转换按钮开始转换</p>
+                          <p className="bg-gray-100 px-3 py-2 rounded">{t('preview.clickToStart')}</p>
                         </div>
                       </div>
                     )}
@@ -816,7 +887,7 @@ export const Home: React.FC = () => {
           {/* 转换设置区域 */}
           <section className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">转换设置</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('common.conversionSettings')}</h2>
               <Conversion 
                 onConvert={handleConvert} // 单张转换回调
                 onBatchConvert={handleBatchConvert} // 批量转换回调
@@ -831,7 +902,7 @@ export const Home: React.FC = () => {
           {/* 高级设置区域 */}
           <section className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">高级设置（可选）</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('common.advancedSettings')}</h2>
               <Settings 
                 settings={advancedSettings} // 当前高级设置
                 onSettingsChange={handleSettingsChange} // 设置变更回调
@@ -844,28 +915,28 @@ export const Home: React.FC = () => {
           {/* 使用说明区域 */}
           <section id="features" className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">如何转换JFIF到JPG？</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.howToConvert')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xl font-bold mx-auto mb-3">
                     1
                   </div>
-                  <h4 className="text-md font-medium text-gray-800 mb-2">选择文件</h4>
-                  <p className="text-gray-600 text-sm">选择您的JFIF文件，支持拖拽上传</p>
+                  <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.steps.selectTitle')}</h4>
+                  <p className="text-gray-600 text-sm">{t('home.steps.selectDesc')}</p>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xl font-bold mx-auto mb-3">
                     2
                   </div>
-                  <h4 className="text-md font-medium text-gray-800 mb-2">开始转换</h4>
-                  <p className="text-gray-600 text-sm">点击转换按钮，等待处理完成</p>
+                  <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.steps.convertTitle')}</h4>
+                  <p className="text-gray-600 text-sm">{t('home.steps.convertDesc')}</p>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-xl font-bold mx-auto mb-3">
                     3
                   </div>
-                  <h4 className="text-md font-medium text-gray-800 mb-2">下载结果</h4>
-                  <p className="text-gray-600 text-sm">转换完成后下载JPG格式图片</p>
+                  <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.steps.downloadTitle')}</h4>
+                  <p className="text-gray-600 text-sm">{t('home.steps.downloadDesc')}</p>
                 </div>
               </div>
             </div>
@@ -874,84 +945,84 @@ export const Home: React.FC = () => {
           {/* 信息介绍区域 */}
           <section id="info" className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">信息介绍</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.infoTitle')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* JFIF格式介绍 */}
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="text-md font-medium text-gray-800 mb-2">什么是JFIF？</h4>
+                  <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.formats.jfif.title')}</h4>
                   <p className="text-gray-600 text-sm">
-                    JPEG文件交换格式(JFIF)是一种简单的文件类型，便于JPEG图像的交换。它是JPG文件格式的旧版本，支持JPEG比特流。
+                    {t('home.formats.jfif.desc')}
                   </p>
                 </div>
                 
                 {/* JPG格式介绍 */}
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="text-md font-medium text-gray-800 mb-2">什么是JPG？</h4>
+                  <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.formats.jpg.title')}</h4>
                   <p className="text-gray-600 text-sm">
-                    JPG(联合图像专家组)是一种通用文件格式，使用压缩算法。它是目前使用最广泛的图像文件格式，大多数浏览器和设备都支持。
+                    {t('home.formats.jpg.desc')}
                   </p>
                 </div>
                 
                 {/* PNG格式介绍 */}
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="text-md font-medium text-gray-800 mb-2">什么是PNG？</h4>
+                  <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.formats.png.title')}</h4>
                   <p className="text-gray-600 text-sm">
-                    PNG(便携式网络图形)是一种无损压缩的图像格式，支持透明背景和真彩色。适合需要高质量和透明效果的图像。
+                    {t('home.formats.png.desc')}
                   </p>
                 </div>
                 
                 {/* WebP格式介绍 */}
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="text-md font-medium text-gray-800 mb-2">什么是WebP？</h4>
+                  <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.formats.webp.title')}</h4>
                   <p className="text-gray-600 text-sm">
-                    WebP是Google开发的新一代图像格式，支持有损和无损压缩，文件体积比JPG和PNG更小，是网页优化的理想选择。
+                    {t('home.formats.webp.desc')}
                   </p>
                 </div>
                 
                 {/* BMP格式介绍 */}
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="text-md font-medium text-gray-800 mb-2">什么是BMP？</h4>
+                  <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.formats.bmp.title')}</h4>
                   <p className="text-gray-600 text-sm">
-                    BMP(位图)是Windows系统的标准图像格式，通常不压缩，文件较大但质量无损。适合需要高质量图像的场景。
+                    {t('home.formats.bmp.desc')}
                   </p>
                 </div>
                 
                 {/* GIF格式介绍 */}
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="text-md font-medium text-gray-800 mb-2">什么是GIF？</h4>
+                  <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.formats.gif.title')}</h4>
                   <p className="text-gray-600 text-sm">
-                    GIF(图形交换格式)支持动画和透明背景，但颜色限制为256色。适合简单的动画图像和图标。
+                    {t('home.formats.gif.desc')}
                   </p>
                 </div>
               </div>
 
               {/* FAQ 常见问题 */}
               <div id="faq" className="mt-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">常见问题（JFIF to JPG）</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.faqTitle')}</h3>
                 <dl className="divide-y divide-gray-200 bg-gray-50 rounded-lg">
                   <div className="p-4">
-                    <dt className="font-medium text-gray-900">如何把 JFIF 快速转换为 JPG？</dt>
-                    <dd className="mt-2 text-sm text-gray-600">在上方"选择文件（JFIF to JPG）"上传图片，点击"转换为 JPG"即可下载。支持批量处理与质量设置。</dd>
+                    <dt className="font-medium text-gray-900">{t('home.faq.q1')}</dt>
+                    <dd className="mt-2 text-sm text-gray-600">{t('home.faq.a1')}</dd>
                   </div>
                   <div className="p-4">
-                    <dt className="font-medium text-gray-900">转换会降低画质吗？</dt>
-                    <dd className="mt-2 text-sm text-gray-600">JPG 为有损压缩。您可以在"转换设置"中调整质量百分比以平衡体积与清晰度，默认为 90%。</dd>
+                    <dt className="font-medium text-gray-900">{t('home.faq.q2')}</dt>
+                    <dd className="mt-2 text-sm text-gray-600">{t('home.faq.a2')}</dd>
                   </div>
                   <div className="p-4">
-                    <dt className="font-medium text-gray-900">支持批量与大文件吗？</dt>
-                    <dd className="mt-2 text-sm text-gray-600">支持批量上传与批量转换；单文件最大 10MB，总大小最大 100MB，可在需要时调整。</dd>
+                    <dt className="font-medium text-gray-900">{t('home.faq.q3')}</dt>
+                    <dd className="mt-2 text-sm text-gray-600">{t('home.faq.a3')}</dd>
                   </div>
                   <div className="p-4">
-                    <dt className="font-medium text-gray-900">透明背景怎么办？</dt>
-                    <dd className="mt-2 text-sm text-gray-600">JPG 不支持透明。若源图含透明区域，建议转换为 PNG 或 WebP 保留透明。</dd>
+                    <dt className="font-medium text-gray-900">{t('home.faq.q4')}</dt>
+                    <dd className="mt-2 text-sm text-gray-600">{t('home.faq.a4')}</dd>
                   </div>
                   <div className="p-4">
-                    <dt className="font-medium text-gray-900">EXIF/拍摄信息会保留吗？</dt>
-                    <dd className="mt-2 text-sm text-gray-600">可在"高级设置"里选择清除或保留元数据。默认清除以保护隐私并缩小体积。</dd>
+                    <dt className="font-medium text-gray-900">{t('home.faq.q5')}</dt>
+                    <dd className="mt-2 text-sm text-gray-600">{t('home.faq.a5')}</dd>
                   </div>
                   <div className="p-4">
-                    <dt className="font-medium text-gray-900">上传是否安全？</dt>
-                    <dd className="mt-2 text-sm text-gray-600">全程 HTTPS 传输，文件仅用于转换，完成后定期清理。我们不会对外共享您的文件或信息。</dd>
+                    <dt className="font-medium text-gray-900">{t('home.faq.q6')}</dt>
+                    <dd className="mt-2 text-sm text-gray-600">{t('home.faq.a6')}</dd>
                   </div>
                 </dl>
               </div>
@@ -961,36 +1032,49 @@ export const Home: React.FC = () => {
           {/* 相关工具区域 */}
           <section className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">相关工具</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.relatedToolsTitle')}</h3>
               <div className="space-y-6">
                 {/* 所有支持的转换格式 */}
                 <div>
-                  <h4 className="text-md font-medium text-gray-800 mb-3">支持的所有转换格式：</h4>
+                  <h4 className="text-md font-medium text-gray-800 mb-3">{t('home.supportedFormats')}</h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {[
-                      'JFIF转JPG', 'JPG转JFIF',
-                      'JFIF转PNG', 'PNG转JFIF',
-                      'JFIF转WebP', 'WebP转JFIF',
-                      'JFIF转BMP', 'BMP转JFIF',
-                      'JFIF转GIF', 'GIF转JFIF',
-                      'JPG转PNG', 'PNG转JPG',
-                      'JPG转WebP', 'WebP转JPG',
-                      'JPG转BMP', 'BMP转JPG',
-                      'JPG转GIF', 'GIF转JPG',
-                      'PNG转WebP', 'WebP转PNG',
-                      'PNG转BMP', 'BMP转PNG',
-                      'PNG转GIF', 'GIF转PNG',
-                      'WebP转BMP', 'BMP转WebP',
-                      'WebP转GIF', 'GIF转WebP',
-                      'BMP转GIF', 'GIF转BMP'
-                    ].map((tool) => (
+                      { key: 'jfifToJpg', tool: t('home.tools.jfifToJpg'), from: 'JFIF', to: 'JPG' },
+                      { key: 'jpgToJfif', tool: t('home.tools.jpgToJfif'), from: 'JPG', to: 'JFIF' },
+                      { key: 'jfifToPng', tool: t('home.tools.jfifToPng'), from: 'JFIF', to: 'PNG' },
+                      { key: 'pngToJfif', tool: t('home.tools.pngToJfif'), from: 'PNG', to: 'JFIF' },
+                      { key: 'jfifToWebp', tool: t('home.tools.jfifToWebp'), from: 'JFIF', to: 'WebP' },
+                      { key: 'webpToJfif', tool: t('home.tools.webpToJfif'), from: 'WebP', to: 'JFIF' },
+                      { key: 'jfifToBmp', tool: t('home.tools.jfifToBmp'), from: 'JFIF', to: 'BMP' },
+                      { key: 'bmpToJfif', tool: t('home.tools.bmpToJfif'), from: 'BMP', to: 'JFIF' },
+                      { key: 'jfifToGif', tool: t('home.tools.jfifToGif'), from: 'JFIF', to: 'GIF' },
+                      { key: 'gifToJfif', tool: t('home.tools.gifToJfif'), from: 'GIF', to: 'JFIF' },
+                      { key: 'jpgToPng', tool: t('home.tools.jpgToPng'), from: 'JPG', to: 'PNG' },
+                      { key: 'pngToJpg', tool: t('home.tools.pngToJpg'), from: 'PNG', to: 'JPG' },
+                      { key: 'jpgToWebp', tool: t('home.tools.jpgToWebp'), from: 'JPG', to: 'WebP' },
+                      { key: 'webpToJpg', tool: t('home.tools.webpToJpg'), from: 'WebP', to: 'JPG' },
+                      { key: 'jpgToBmp', tool: t('home.tools.jpgToBmp'), from: 'JPG', to: 'BMP' },
+                      { key: 'bmpToJpg', tool: t('home.tools.bmpToJpg'), from: 'BMP', to: 'JPG' },
+                      { key: 'jpgToGif', tool: t('home.tools.jpgToGif'), from: 'JPG', to: 'GIF' },
+                      { key: 'gifToJpg', tool: t('home.tools.gifToJpg'), from: 'GIF', to: 'JPG' },
+                      { key: 'pngToWebp', tool: t('home.tools.pngToWebp'), from: 'PNG', to: 'WebP' },
+                      { key: 'webpToPng', tool: t('home.tools.webpToPng'), from: 'WebP', to: 'PNG' },
+                      { key: 'pngToBmp', tool: t('home.tools.pngToBmp'), from: 'PNG', to: 'BMP' },
+                      { key: 'bmpToPng', tool: t('home.tools.bmpToPng'), from: 'BMP', to: 'PNG' },
+                      { key: 'pngToGif', tool: t('home.tools.pngToGif'), from: 'PNG', to: 'GIF' },
+                      { key: 'gifToPng', tool: t('home.tools.gifToPng'), from: 'GIF', to: 'PNG' },
+                      { key: 'webpToBmp', tool: t('home.tools.webpToBmp'), from: 'WebP', to: 'BMP' },
+                      { key: 'bmpToWebp', tool: t('home.tools.bmpToWebp'), from: 'BMP', to: 'WebP' },
+                      { key: 'webpToGif', tool: t('home.tools.webpToGif'), from: 'WebP', to: 'GIF' },
+                      { key: 'gifToWebp', tool: t('home.tools.gifToWebp'), from: 'GIF', to: 'WebP' },
+                      { key: 'bmpToGif', tool: t('home.tools.bmpToGif'), from: 'BMP', to: 'GIF' },
+                      { key: 'gifToBmp', tool: t('home.tools.gifToBmp'), from: 'GIF', to: 'BMP' }
+                    ].map(({ key, tool, from, to }) => (
                       <button 
-                        key={tool} 
+                        key={key} 
                         onClick={() => {
-                          // 解析转换格式
-                          const [, toFormat] = tool.split('转');
                           // 设置预设格式
-                          setPresetFormat(toFormat.toLowerCase() as any);
+                          setPresetFormat(to.toLowerCase() as any);
                           // 滚动到文件选择区域
                           const fileUploadSection = document.getElementById('file-upload');
                           if (fileUploadSection) {
@@ -1011,29 +1095,29 @@ export const Home: React.FC = () => {
           {/* 安全承诺区域 */}
           <section className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">安全承诺</h3>
-              <p className="text-gray-600 mb-4">您的数据，我们的优先</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.securityTitle')}</h3>
+              <p className="text-gray-600 mb-4">{t('home.dataPriority')}</p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center">
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-green-600 text-xl mx-auto mb-3">
                     🔒
                   </div>
-                  <h5 className="text-md font-medium text-gray-800 mb-1">SSL/TLS加密</h5>
-                  <p className="text-xs text-gray-500">256位加密传输</p>
+                  <h5 className="text-md font-medium text-gray-800 mb-1">{t('home.ssl')}</h5>
+                  <p className="text-xs text-gray-500">{t('home.security.sslDesc')}</p>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 text-xl mx-auto mb-3">
                     🏢
                   </div>
-                  <h5 className="text-md font-medium text-gray-800 mb-1">安全数据中心</h5>
-                  <p className="text-xs text-gray-500">ISO 27001认证</p>
+                  <h5 className="text-md font-medium text-gray-800 mb-1">{t('home.dataCenter')}</h5>
+                  <p className="text-xs text-gray-500">{t('home.security.dataCenterDesc')}</p>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 text-xl mx-auto mb-3">
                     👤
                   </div>
-                  <h5 className="text-md font-medium text-gray-800 mb-1">访问控制</h5>
-                  <p className="text-xs text-gray-500">多重身份验证</p>
+                  <h5 className="text-md font-medium text-gray-800 mb-1">{t('home.access')}</h5>
+                  <p className="text-xs text-gray-500">{t('home.security.accessDesc')}</p>
                 </div>
               </div>
             </div>
@@ -1048,42 +1132,42 @@ export const Home: React.FC = () => {
             <div>
               <div className="flex items-center space-x-2">
               <Logo size={32} rounded="md" backgroundColorClass="bg-transparent" imgSrc="/icons/logo.svg" imgAlt="logo" />
-                 <span className="text-lg font-semibold">JFIF转JPG工具站</span>
+                 <span className="text-lg font-semibold">{t('common.brandName')}</span>
               </div>
-              <p className="mt-3 text-sm text-[#646cff]">一键完成 jfif to jpg 在线转换。免费、快速、稳定，支持批量与高质量输出。</p>
+              <p className="mt-3 text-sm text-[#646cff]">{t('home.footer.description')}</p>
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-white">转换</h4>
+              <h4 className="text-sm font-semibold text-white">{t('common.converter')}</h4>
               <ul className="mt-3 space-y-2 text-sm">
-                <li><a href="#upload" className="hover:text-white">JFIF 转 JPG</a></li>
-                <li><a href="#" className="hover:text-white">PNG 转 JPG</a></li>
-                <li><a href="#" className="hover:text-white">BMP 转 JPG</a></li>
-                <li><a href="#" className="hover:text-white">WEBP 转 JPG</a></li>
+                <li><a href="#upload" className="hover:text-white">{t('home.footer.converterLinks.jfifToJpg')}</a></li>
+                <li><a href="#" className="hover:text-white">{t('home.footer.converterLinks.pngToJpg')}</a></li>
+                <li><a href="#" className="hover:text-white">{t('home.footer.converterLinks.bmpToJpg')}</a></li>
+                <li><a href="#" className="hover:text-white">{t('home.footer.converterLinks.webpToJpg')}</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-white">工具</h4>
+              <h4 className="text-sm font-semibold text-white">{t('tools.header.title')}</h4>
               <ul className="mt-3 space-y-2 text-sm">
-                <li><a href="#features" className="hover:text-white">如何使用</a></li>
-                <li><a href="#faq" className="hover:text-white">常见问题</a></li>
-                <li><a href="#info" className="hover:text-white">格式知识</a></li>
+                <li><a href="#features" className="hover:text-white">{t('home.footer.howToUse')}</a></li>
+                <li><a href="#faq" className="hover:text-white">{t('home.faqTitle')}</a></li>
+                <li><a href="#info" className="hover:text-white">{t('home.footer.formatKnowledge')}</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-white">关于</h4>
+              <h4 className="text-sm font-semibold text-white">{t('home.footer.aboutLinks.about')}</h4>
               <ul className="mt-3 space-y-2 text-sm">
-                <li><a href="/privacy" className="hover:text-white">Privacy Policy</a></li>
-                <li><a href="/terms" className="hover:text-white">Terms of Service</a></li>
-                <li><a href="/about" className="hover:text-white">About</a></li>
+                <li><a href="/privacy" className="hover:text-white">{t('home.footer.aboutLinks.privacy')}</a></li>
+                <li><a href="/terms" className="hover:text-white">{t('home.footer.aboutLinks.terms')}</a></li>
+                <li><a href="/about" className="hover:text-white">{t('home.footer.aboutLinks.about')}</a></li>
               </ul>
             </div>
           </div>
 
           <div className="mt-10 border-t border-white/10 pt-6 flex flex-col md:flex-row items-center justify-between text-xs text-gray-400">
-            <p>© 2025 JFIF转JPG转换器. 保留所有权利.</p>
+            <p>© 2025 {t('common.brandName')}. All rights reserved.</p>
             <div className="mt-3 md:mt-0 space-x-4">
               <a href="https://jfiftojpg.site/" className="hover:text-white">Canonical</a>
-              <a href="#upload" className="hover:text-white">开始转换</a>
+              <a href="#upload" className="hover:text-white">{t('home.footer.startConversion')}</a>
             </div>
           </div>
         </div>

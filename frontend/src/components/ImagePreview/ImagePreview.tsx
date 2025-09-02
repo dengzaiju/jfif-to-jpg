@@ -1,5 +1,6 @@
 import React from 'react';
 import { PhotoIcon } from '@heroicons/react/24/outline';
+import { useI18n } from '../../hooks/useI18n';
 
 interface ImageFile {
   id: string;
@@ -19,6 +20,7 @@ interface ImagePreviewProps {
 }
 
 export const ImagePreview: React.FC<ImagePreviewProps> = ({ images, onRemove }) => {
+  const { t } = useI18n();
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -31,15 +33,15 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({ images, onRemove }) 
     return (
       <div className="text-center py-12">
         <PhotoIcon className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-2 text-sm font-medium text-gray-900">暂无图片</h3>
-        <p className="mt-1 text-sm text-gray-500">请先上传图片文件</p>
+        <h3 className="mt-2 text-sm font-medium text-gray-900">{t('preview.emptyTitle')}</h3>
+        <p className="mt-1 text-sm text-gray-500">{t('preview.emptyDesc')}</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-gray-900">图片预览</h3>
+      <h3 className="text-lg font-medium text-gray-900">{t('preview.sectionTitle')}</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {images.map((image) => (
           <div key={image.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -57,11 +59,11 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({ images, onRemove }) 
                     {image.file.name}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    原始: {image.file.type} • {formatFileSize(image.file.size)}
+                    {t('preview.original')}: {image.file.type} • {formatFileSize(image.file.size)}
                   </p>
                   {image.converted && (
                     <p className="text-xs text-green-600 mt-1">
-                      转换后: {image.converted.format} • {formatFileSize(image.converted.size)}
+                      {t('preview.converted')}: {image.converted.format} • {formatFileSize(image.converted.size)}
                     </p>
                   )}
                 </div>
@@ -80,10 +82,10 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({ images, onRemove }) 
               {image.converted && (
                 <div className="mt-3 flex space-x-2">
                   <button className="flex-1 bg-blue-600 text-white text-xs px-3 py-2 rounded-md hover:bg-blue-700 transition-colors">
-                    下载 {image.converted.format.toUpperCase()}
+                    {t('preview.download')} {image.converted.format.toUpperCase()}
                   </button>
                   <button className="flex-1 bg-gray-100 text-gray-700 text-xs px-3 py-2 rounded-md hover:bg-gray-200 transition-colors">
-                    查看详情
+                    {t('preview.details')}
                   </button>
                 </div>
               )}

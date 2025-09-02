@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAnalytics } from '../../hooks/useAnalytics';
+import { useI18n } from '../../hooks/useI18n';
 
 interface ConversionSettings {
   quality: number;
@@ -34,6 +35,7 @@ export const Conversion: React.FC<ConversionProps> = ({
     maintainAspectRatio: true
   });
   const { trackConversion } = useAnalytics();
+  const { t } = useI18n();
 
   useEffect(() => {
     if (presetFormat && presetFormat !== settings.format) {
@@ -46,13 +48,11 @@ export const Conversion: React.FC<ConversionProps> = ({
   };
 
   const handleConvert = () => {
-    // 跟踪转换事件
     trackConversion(settings.format, settings.quality);
     onConvert(settings);
   };
 
   const handleBatchConvert = () => {
-    // 跟踪批量转换事件
     trackConversion(settings.format, settings.quality);
     onBatchConvert(settings);
   };
@@ -63,13 +63,13 @@ export const Conversion: React.FC<ConversionProps> = ({
     <div className="space-y-6 font-['Comic Sans MS', 'Brush Script MT', cursive]">
       {/* 转换设置 */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">转换设置</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">{t('common.conversionSettings')}</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* 输出格式 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              输出格式
+              {t('conversion.outputFormat')}
             </label>
             <select
               id="output-format-select"
@@ -88,7 +88,7 @@ export const Conversion: React.FC<ConversionProps> = ({
           {/* 图片质量 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              图片质量: {settings.quality}%
+              {t('conversion.imageQuality')}: {settings.quality}%
             </label>
             <input
               type="range"
@@ -103,15 +103,15 @@ export const Conversion: React.FC<ConversionProps> = ({
           {/* 尺寸调整 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              尺寸调整
+              {t('conversion.resize')}
             </label>
             <select
               value={settings.resize}
               onChange={(e) => handleSettingChange('resize', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="original">保持原始尺寸</option>
-              <option value="custom">自定义尺寸</option>
+              <option value="original">{t('conversion.keepOriginal')}</option>
+              <option value="custom">{t('conversion.customSize')}</option>
             </select>
           </div>
 
@@ -125,7 +125,7 @@ export const Conversion: React.FC<ConversionProps> = ({
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
             <label htmlFor="maintainAspectRatio" className="ml-2 text-sm text-gray-700">
-              保持宽高比
+              {t('conversion.maintainAspectRatio')}
             </label>
           </div>
         </div>
@@ -135,26 +135,26 @@ export const Conversion: React.FC<ConversionProps> = ({
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                宽度 (px)
+                {t('conversion.widthPx')}
               </label>
               <input
                 type="number"
                 value={settings.width || ''}
                 onChange={(e) => handleSettingChange('width', parseInt(e.target.value) || undefined)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="宽度"
+                placeholder={t('conversion.widthPx')}
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                高度 (px)
+                {t('conversion.heightPx')}
               </label>
               <input
                 type="number"
                 value={settings.height || ''}
                 onChange={(e) => handleSettingChange('height', parseInt(e.target.value) || undefined)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="高度"
+                placeholder={t('conversion.heightPx')}
               />
             </div>
           </div>
@@ -163,7 +163,7 @@ export const Conversion: React.FC<ConversionProps> = ({
 
       {/* 转换控制 */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">转换控制</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">{t('conversion.controls')}</h3>
         
         <div className="flex flex-col sm:flex-row gap-4">
           <button
@@ -171,7 +171,7 @@ export const Conversion: React.FC<ConversionProps> = ({
             disabled={isConverting}
             className="flex-1 border border-blue-300 bg-white text-gray-800 hover:text-blue-600 px-6 py-3 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-70 disabled:bg-white disabled:text-blue-400 disabled:border-blue-200 flex items-center justify-center font-semibold text-base"
           >
-            🔄 转换为 {settings.format.toUpperCase()}
+            🔄 {t('conversion.convertTo')} {settings.format.toUpperCase()}
           </button>
           
           <button
@@ -179,7 +179,7 @@ export const Conversion: React.FC<ConversionProps> = ({
             disabled={isConverting}
             className="flex-1 border border-green-300 bg-white text-gray-800 hover:text-green-700 px-6 py-3 rounded-md hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-70 disabled:bg-white disabled:text-green-400 disabled:border-green-200 flex items-center justify-center font-semibold text-base"
           >
-            📥 批量转换
+            📥 {t('conversion.batch')}
           </button>
         </div>
 
@@ -187,7 +187,7 @@ export const Conversion: React.FC<ConversionProps> = ({
         {isConverting && (
           <div className="mt-4">
             <div className="flex justify-between text-sm text-gray-600 mb-2">
-              <span>转换进度</span>
+              <span>{t('conversion.progress')}</span>
               <span>{convertedCount} / {totalCount}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
