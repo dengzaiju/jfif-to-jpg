@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
     <!-- Primary Meta Tags -->
     <title>JFIF to JPG 在线转换器 | JFIF转JPG工具站</title>
@@ -69,7 +69,25 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="scale-root"><div id="root"></div></div>
+    <script>
+      (function() {
+        const DESIGN_WIDTH = 1200; // 与桌面布局一致的设计宽度
+        function applyScale() {
+          const el = document.getElementById('scale-root');
+          if (!el) return;
+          const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+          const scale = Math.min(1, vw / DESIGN_WIDTH);
+          el.style.transform = 'scale(' + scale + ')';
+          el.style.transformOrigin = 'top left';
+          el.style.width = DESIGN_WIDTH + 'px';
+          el.style.margin = '0 auto';
+        }
+        window.addEventListener('resize', applyScale);
+        window.addEventListener('orientationchange', applyScale);
+        document.addEventListener('DOMContentLoaded', applyScale);
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

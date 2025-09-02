@@ -142,7 +142,7 @@ export const Tools: React.FC = () => {
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="min-h-20 sm:min-h-16 py-2 flex flex-wrap justify-between items-center gap-y-2">
             <div className="flex items-center">
               <a href="/" className="flex items-center text-gray-500 hover:text-gray-900 mr-4">
                 <ArrowLeftIcon className="w-5 h-5 mr-1" />
@@ -150,7 +150,7 @@ export const Tools: React.FC = () => {
               </a>
               <h1 className="text-xl font-bold text-gray-900">{t('tools.header.title')}</h1>
             </div>
-            <nav className="flex items-center space-x-4">
+            <nav className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <a href="/" className="text-gray-500 hover:text-gray-900">{t('tools.nav.home')}</a>
               <a href="/converter" className="text-gray-500 hover:text-gray-900">{t('tools.nav.converter')}</a>
               <a href="#" className="text-gray-500 hover:text-gray-900">{t('tools.nav.help')}</a>

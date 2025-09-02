@@ -728,15 +728,15 @@ export const Home: React.FC = () => {
       {/* Header 头部导航栏 */}
       <header className="bg-white/90 backdrop-blur-sm border-b border-gray-200">
         <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="h-16 flex items-center justify-between">
+          <div className="min-h-20 sm:min-h-16 py-2 flex items-center justify-between">
             {/* 左侧：品牌 + 导航 */}
             <div className="flex items-center gap-8">
               {/* 品牌区 */}
               <div className="flex items-center space-x-3">
                 <Logo size={32} rounded="md" backgroundColorClass="bg-transparent" imgSrc="/icons/logo.svg" imgAlt="logo" />
-                <div>
+                <div className="max-w-[48ch]">
                   <span className="text-xl md:text-2xl font-bold text-[#646cff]">{t('common.brandName')}</span>
-                  <p className="hidden sm:block text-xs md:text-sm text-[#646cff]">{t('common.brandSlogan')}</p>
+                  <p className="hidden sm:block text-xs md:text-sm text-[#646cff] whitespace-normal break-words leading-snug">{t('common.brandSlogan')}</p>
                 </div>
               </div>
 
@@ -786,23 +786,23 @@ export const Home: React.FC = () => {
             </div>
 
             {/* 右侧：语言切换 */}
-            <div className="hidden md:block"><LanguageSwitcher /></div>
+            <div className="block"><LanguageSwitcher /></div>
           </div>
         </div>
       </header>
 
       {/* Main Content 主体内容 */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="space-y-8">
           {/* 页面标题 */}
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('app.title')}</h1>
-            <p className="text-lg text-gray-600">{t('app.subtitle')}</p>
+            <h1 className="fluid-hero-title font-bold text-gray-900 mb-3 sm:mb-4">{t('app.title')}</h1>
+            <p className="fluid-hero-subtitle text-gray-600 max-w-prose mx-auto">{t('app.subtitle')}</p>
           </div>
 
           {/* 文件上传区域 */}
           <section id="file-upload" className="bg-white border border-gray-200 rounded-lg shadow-sm">
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('app.upload.title')}</h2>
               <FileUpload 
                 onFileSelect={handleFileSelect} // 上传文件回调
@@ -815,7 +815,7 @@ export const Home: React.FC = () => {
 
           {/* 预览结果区域 */}
           <section className="bg-white border border-gray-200 rounded-lg shadow-sm">
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('app.preview.title')}</h2>
               {images.length === 0 ? ( // 没有图片时显示提示
                 <div className="text-center py-12">
@@ -826,7 +826,7 @@ export const Home: React.FC = () => {
                   <p className="text-gray-500">{t('preview.emptyDesc')}</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-6">
                   {/* 原始图片预览 */}
                   <div className="text-center">
                     <h4 className="text-md font-medium text-gray-900 mb-3">{t('preview.original')}</h4>
@@ -925,7 +925,7 @@ export const Home: React.FC = () => {
           <section id="features" className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.howToConvert')}</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-3 gap-6">
                 <div className="text-center">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xl font-bold mx-auto mb-3">
                     1
@@ -1106,7 +1106,7 @@ export const Home: React.FC = () => {
             <div className="p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.securityTitle')}</h3>
               <p className="text-gray-600 mb-4">{t('home.dataPriority')}</p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="text-center">
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-green-600 text-xl mx-auto mb-3">
                     🔒
@@ -1137,7 +1137,7 @@ export const Home: React.FC = () => {
       {/* Footer 页脚 */}
       <footer className="bg-gray-900 text-gray-300 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2">
               <Logo size={32} rounded="md" backgroundColorClass="bg-transparent" imgSrc="/icons/logo.svg" imgAlt="logo" />
