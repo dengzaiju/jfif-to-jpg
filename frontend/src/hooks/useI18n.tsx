@@ -299,7 +299,7 @@ const defaultMessages: Record<Locale, Messages> = {
     },
     app: {
       title: 'JFIF to JPG 在线转换器',
-      subtitle: '免费在线将 JFIF 转换为 JPG（jfif to jpg），高质量、快速、安全。',
+      subtitle: '免费在线JFIF转JPG转换器，支持批量转换、质量调节、尺寸调整。拖拽上传，一键转换多种格式，快速安全无需注册。',
       nav: { others: '其他转换', features: '特色', info: '信息', faq: '常见问题' },
       upload: { title: '选择文件（JFIF to JPG）' },
       preview: { title: '预览结果（JFIF 转 JPG 对比）' },

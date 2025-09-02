@@ -26,7 +26,7 @@ export const config = {
   app: {
     name: 'JFIF转JPG工具站',
     version: '1.0.0',
-    description: '免费在线将 JFIF 转换为 JPG（jfif to jpg）。支持批量转换、质量设置与尺寸调整。',
+    description: '免费在线JFIF转JPG转换器，支持批量转换、质量调节、尺寸调整。拖拽上传，一键转换JFIF、PNG、WebP、BMP、GIF等格式，快速安全无需注册。',
   },
   
   // 功能开关
