@@ -3,12 +3,13 @@
 #scale-root {
   position: relative;
   transform-origin: top left;
-  overflow: hidden;
+  overflow: visible;
 }
 html, body {
   overflow-x: hidden;
+  overflow-y: auto;
   min-height: 100%;
-  height: 100%;
+  height: auto;
   background: linear-gradient(135deg, #bfdbfe 0%, #a5b4fc 50%, #c4b5fd 100%) fixed no-repeat;
   background-size: cover;
 }

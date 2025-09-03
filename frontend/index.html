@@ -93,16 +93,16 @@
           el.style.transform = 'scale(' + scale + ')';
           el.style.transformOrigin = 'top left';
           el.style.width = DESIGN_WIDTH + 'px';
-          el.style.height = 'auto';
           el.style.margin = '0 auto';
           
-          // 修复滚动问题：确保容器高度正确
-          if (scale < 1) {
-            const rootEl = document.getElementById('root');
-            if (rootEl) {
-              const contentHeight = rootEl.scrollHeight;
-              el.style.height = (contentHeight * scale) + 'px';
-            }
+          // 修复滚动问题：确保容器高度能完全显示所有内容
+          const rootEl = document.getElementById('root');
+          if (rootEl && rootEl.scrollHeight > 0) {
+            const contentHeight = rootEl.scrollHeight;
+            // 确保容器高度足够，添加一些额外空间
+            const minHeight = Math.max(contentHeight * scale, window.innerHeight);
+            el.style.height = minHeight + 'px';
+            console.log('Scale applied:', { scale, contentHeight, minHeight, viewportHeight: window.innerHeight });
           }
         }
         
@@ -114,12 +114,33 @@
           });
         }
         
+        // 等待 React 应用完全加载后再执行缩放
+        function waitForReactApp() {
+          const rootEl = document.getElementById('root');
+          if (rootEl && rootEl.children.length > 0) {
+            // React 应用已加载，等待一下确保渲染完成
+            setTimeout(() => {
+              applyScale();
+              // 再次检查，确保高度正确
+              setTimeout(applyScale, 500);
+            }, 200);
+          } else {
+            // 继续等待
+            setTimeout(waitForReactApp, 100);
+          }
+        }
+        
         // 初始执行
         if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', applyScale);
+          document.addEventListener('DOMContentLoaded', waitForReactApp);
         } else {
-          applyScale();
+          waitForReactApp();
         }
+        
+        // 额外监听：确保在页面完全稳定后再次应用缩放
+        window.addEventListener('load', () => {
+          setTimeout(applyScale, 1000);
+        });
         
         // 节流的事件监听
         window.addEventListener('resize', throttledApplyScale, { passive: true });
