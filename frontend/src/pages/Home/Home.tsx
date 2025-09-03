@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react'; // 引入React库和useState钩子
-import { Logo } from '../../components';
+import { Logo, LazySection } from '../../components';
 import { FileUpload } from '../../components/FileUpload'; // 引入文件上传组件
 import { Settings } from '../../components/Settings'; // 引入高级设置组件
 import { Conversion } from '../../components/Conversion'; // 引入转换设置组件
@@ -894,68 +894,75 @@ export const Home: React.FC = () => {
           </section>
 
           {/* 转换设置区域 */}
-          <section className="bg-white border border-gray-200 rounded-lg shadow-sm">
-            <div className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('common.conversionSettings')}</h2>
-              <Conversion 
-                onConvert={handleConvert} // 单张转换回调
-                onBatchConvert={handleBatchConvert} // 批量转换回调
-                isConverting={isConverting} // 是否正在转换
-                convertedCount={convertedCount} // 已转换数量
-                totalCount={totalCount} // 总数量
-                presetFormat={presetFormat} // 预设输出格式
-              />
-            </div>
-          </section>
+          <LazySection>
+            <section className="bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('common.conversionSettings')}</h2>
+                <Conversion 
+                  onConvert={handleConvert} // 单张转换回调
+                  onBatchConvert={handleBatchConvert} // 批量转换回调
+                  isConverting={isConverting} // 是否正在转换
+                  convertedCount={convertedCount} // 已转换数量
+                  totalCount={totalCount} // 总数量
+                  presetFormat={presetFormat} // 预设输出格式
+                />
+              </div>
+            </section>
+          </LazySection>
 
           {/* 高级设置区域 */}
-          <section className="bg-white border border-gray-200 rounded-lg shadow-sm">
-            <div className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('common.advancedSettings')}</h2>
-              <Settings 
-                settings={advancedSettings} // 当前高级设置
-                onSettingsChange={handleSettingsChange} // 设置变更回调
-                onApplyToAll={handleApplyToAll} // 应用到所有回调
-                onReset={handleResetSettings} // 重置回调
-              />
-            </div>
-          </section>
+          <LazySection>
+            <section className="bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('common.advancedSettings')}</h2>
+                <Settings 
+                  settings={advancedSettings} // 当前高级设置
+                  onSettingsChange={handleSettingsChange} // 设置变更回调
+                  onApplyToAll={handleApplyToAll} // 应用到所有回调
+                  onReset={handleResetSettings} // 重置回调
+                />
+              </div>
+            </section>
+          </LazySection>
 
           {/* 使用说明区域 */}
-          <section id="features" className="bg-white border border-gray-200 rounded-lg shadow-sm">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.howToConvert')}</h3>
-              <div className="grid grid-cols-3 gap-6">
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xl font-bold mx-auto mb-3">
-                    1
+          <LazySection>
+            <section id="features" className="bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.howToConvert')}</h3>
+                <div className="grid grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xl font-bold mx-auto mb-3">
+                      1
+                    </div>
+                    <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.steps.selectTitle')}</h4>
+                    <p className="text-gray-600 text-sm">{t('home.steps.selectDesc')}</p>
                   </div>
-                  <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.steps.selectTitle')}</h4>
-                  <p className="text-gray-600 text-sm">{t('home.steps.selectDesc')}</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xl font-bold mx-auto mb-3">
-                    2
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xl font-bold mx-auto mb-3">
+                      2
+                    </div>
+                    <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.steps.convertTitle')}</h4>
+                    <p className="text-gray-600 text-sm">{t('home.steps.convertDesc')}</p>
                   </div>
-                  <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.steps.convertTitle')}</h4>
-                  <p className="text-gray-600 text-sm">{t('home.steps.convertDesc')}</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-xl font-bold mx-auto mb-3">
-                    3
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-xl font-bold mx-auto mb-3">
+                      3
+                    </div>
+                    <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.steps.downloadTitle')}</h4>
+                    <p className="text-gray-600 text-sm">{t('home.steps.downloadDesc')}</p>
                   </div>
-                  <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.steps.downloadTitle')}</h4>
-                  <p className="text-gray-600 text-sm">{t('home.steps.downloadDesc')}</p>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </LazySection>
 
           {/* 信息介绍区域 */}
-          <section id="info" className="bg-white border border-gray-200 rounded-lg shadow-sm">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.infoTitle')}</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <LazySection>
+            <section id="info" className="bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.infoTitle')}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* JFIF格式介绍 */}
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h4 className="text-md font-medium text-gray-800 mb-2">{t('home.formats.jfif.title')}</h4>
@@ -1037,16 +1044,18 @@ export const Home: React.FC = () => {
               </div>
             </div>
           </section>
+        </LazySection>
 
           {/* 相关工具区域 */}
-          <section className="bg-white border border-gray-200 rounded-lg shadow-sm">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.relatedToolsTitle')}</h3>
-              <div className="space-y-6">
-                {/* 所有支持的转换格式 */}
-                <div>
-                  <h4 className="text-md font-medium text-gray-800 mb-3">{t('home.supportedFormats')}</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <LazySection>
+            <section className="bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.relatedToolsTitle')}</h3>
+                <div className="space-y-6">
+                  {/* 所有支持的转换格式 */}
+                  <div>
+                    <h4 className="text-md font-medium text-gray-800 mb-3">{t('home.supportedFormats')}</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {[
                       { key: 'jfifToJpg', tool: t('home.tools.jfifToJpg'), from: 'JFIF', to: 'JPG' },
                       { key: 'jpgToJfif', tool: t('home.tools.jpgToJfif'), from: 'JPG', to: 'JFIF' },
@@ -1100,42 +1109,46 @@ export const Home: React.FC = () => {
               </div>
             </div>
           </section>
+        </LazySection>
 
           {/* 安全承诺区域 */}
-          <section className="bg-white border border-gray-200 rounded-lg shadow-sm">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.securityTitle')}</h3>
-              <p className="text-gray-600 mb-4">{t('home.dataPriority')}</p>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-green-600 text-xl mx-auto mb-3">
-                    🔒
+          <LazySection>
+            <section className="bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.securityTitle')}</h3>
+                <p className="text-gray-600 mb-4">{t('home.dataPriority')}</p>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-green-600 text-xl mx-auto mb-3">
+                      🔒
+                    </div>
+                    <h5 className="text-md font-medium text-gray-800 mb-1">{t('home.ssl')}</h5>
+                    <p className="text-xs text-gray-500">{t('home.security.sslDesc')}</p>
                   </div>
-                  <h5 className="text-md font-medium text-gray-800 mb-1">{t('home.ssl')}</h5>
-                  <p className="text-xs text-gray-500">{t('home.security.sslDesc')}</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 text-xl mx-auto mb-3">
-                    🏢
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 text-xl mx-auto mb-3">
+                      🏢
+                    </div>
+                    <h5 className="text-md font-medium text-gray-800 mb-1">{t('home.dataCenter')}</h5>
+                    <p className="text-xs text-gray-500">{t('home.security.dataCenterDesc')}</p>
                   </div>
-                  <h5 className="text-md font-medium text-gray-800 mb-1">{t('home.dataCenter')}</h5>
-                  <p className="text-xs text-gray-500">{t('home.security.dataCenterDesc')}</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 text-xl mx-auto mb-3">
-                    👤
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-purple-600 text-xl mx-auto mb-3">
+                      👤
+                    </div>
+                    <h5 className="text-md font-medium text-gray-800 mb-1">{t('home.access')}</h5>
+                    <p className="text-xs text-gray-500">{t('home.security.accessDesc')}</p>
                   </div>
-                  <h5 className="text-md font-medium text-gray-800 mb-1">{t('home.access')}</h5>
-                  <p className="text-xs text-gray-500">{t('home.security.accessDesc')}</p>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </LazySection>
         </div>
       </main>
 
       {/* Footer 页脚 */}
-      <footer className="bg-gray-900 text-gray-300 mt-16">
+      <LazySection>
+        <footer className="bg-gray-900 text-gray-300 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
           <div className="grid grid-cols-4 gap-8">
             <div>
@@ -1181,6 +1194,7 @@ export const Home: React.FC = () => {
           </div>
         </div>
       </footer>
+        </LazySection>
     </div>
   );
 }; 

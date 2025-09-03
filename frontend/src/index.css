@@ -3,6 +3,7 @@
 #scale-root {
   position: relative;
   transform-origin: top left;
+  overflow: hidden;
 }
 html, body {
   overflow-x: hidden;

@@ -3,7 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
+
+    <!-- Performance optimizations -->
+    <link rel="dns-prefetch" href="//jfiftojpg.site" />
+    <link rel="dns-prefetch" href="//api.jfiftojpg.site" />
 
     <!-- Primary Meta Tags -->
     <title>JFIF to JPG 在线转换器 | JFIF转JPG工具站</title>
@@ -73,19 +77,53 @@
     <script>
       (function() {
         const DESIGN_WIDTH = 1200; // 与桌面布局一致的设计宽度
+        let resizeTimer = null;
+        let lastWidth = 0;
+        
         function applyScale() {
           const el = document.getElementById('scale-root');
           if (!el) return;
           const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+          
+          // 避免重复计算相同宽度
+          if (vw === lastWidth) return;
+          lastWidth = vw;
+          
           const scale = Math.min(1, vw / DESIGN_WIDTH);
           el.style.transform = 'scale(' + scale + ')';
           el.style.transformOrigin = 'top left';
           el.style.width = DESIGN_WIDTH + 'px';
+          el.style.height = 'auto';
           el.style.margin = '0 auto';
+          
+          // 修复滚动问题：确保容器高度正确
+          if (scale < 1) {
+            const rootEl = document.getElementById('root');
+            if (rootEl) {
+              const contentHeight = rootEl.scrollHeight;
+              el.style.height = (contentHeight * scale) + 'px';
+            }
+          }
         }
-        window.addEventListener('resize', applyScale);
-        window.addEventListener('orientationchange', applyScale);
-        document.addEventListener('DOMContentLoaded', applyScale);
+        
+        function throttledApplyScale() {
+          if (resizeTimer) return;
+          resizeTimer = requestAnimationFrame(() => {
+            applyScale();
+            resizeTimer = null;
+          });
+        }
+        
+        // 初始执行
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', applyScale);
+        } else {
+          applyScale();
+        }
+        
+        // 节流的事件监听
+        window.addEventListener('resize', throttledApplyScale, { passive: true });
+        window.addEventListener('orientationchange', throttledApplyScale, { passive: true });
       })();
     </script>
     <script type="module" src="/src/main.tsx"></script>
