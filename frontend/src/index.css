@@ -5,13 +5,18 @@
   transform-origin: top left;
   overflow: visible;
 }
-html, body {
+html {
   overflow-x: hidden;
   overflow-y: auto;
-  min-height: 100%;
+  height: auto;
+}
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
   height: auto;
   background: linear-gradient(135deg, #bfdbfe 0%, #a5b4fc 50%, #c4b5fd 100%) fixed no-repeat;
   background-size: cover;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* 暗色主题样式 */

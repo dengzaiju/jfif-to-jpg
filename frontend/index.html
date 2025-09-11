@@ -90,19 +90,26 @@
           lastWidth = vw;
           
           const scale = Math.min(1, vw / DESIGN_WIDTH);
+
+          // 桌面端（scale===1）不进行 transform/height 设置，避免双滚动条
+          if (scale === 1) {
+            el.style.transform = '';
+            el.style.width = DESIGN_WIDTH + 'px';
+            el.style.margin = '0 auto';
+            el.style.height = '';
+            return;
+          }
+
+          // 移动端（scale<1）进行等比缩放
           el.style.transform = 'scale(' + scale + ')';
           el.style.transformOrigin = 'top left';
           el.style.width = DESIGN_WIDTH + 'px';
           el.style.margin = '0 auto';
-          
-          // 修复滚动问题：确保容器高度能完全显示所有内容
+
           const rootEl = document.getElementById('root');
           if (rootEl && rootEl.scrollHeight > 0) {
             const contentHeight = rootEl.scrollHeight;
-            // 确保容器高度足够，添加一些额外空间
-            const minHeight = Math.max(contentHeight * scale, window.innerHeight);
-            el.style.height = minHeight + 'px';
-            console.log('Scale applied:', { scale, contentHeight, minHeight, viewportHeight: window.innerHeight });
+            el.style.height = (contentHeight * scale) + 'px';
           }
         }
         
